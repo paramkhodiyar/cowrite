@@ -1,33 +1,53 @@
 .vanta-container {
     position: absolute;
     width: 100%;
-    height: 100vh; 
+    height: 100vh;
     top: 0;
     left: 0;
     display: flex;
-    /* justify-content: center; */
     align-items: center;
     overflow: hidden;
-    position: relative;
+}
 
-  }
-  
-  .content {
+.content {
     position: absolute;
     margin-left: 100px;
     z-index: 1;
     color: white;
-    text-align: center;
+    text-align: left;
     padding: 20px;
     border-radius: 8px;
-    /* background: rgba(0, 0, 0, 0.6);  */
-  }
-  
-  h1 {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+
+}
+
+h1,
+p {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0;
+}
+
+h1 {
     font-size: 3rem;
-  }
-  
-  p {
+    animation: typing 3s steps(30) 1s forwards;
+}
+
+p {
     font-size: 1.25rem;
-  }
-  
+    animation: typing 4s steps(45) 4s forwards;
+    margin-top: 20px;
+}
+
+@keyframes typing {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
+}
