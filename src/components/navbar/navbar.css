@@ -1,0 +1,39 @@
+.nav-bar {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    top: 2%;
+    left: 0;
+    width: 95%;
+    padding: 10px 20px;
+    background: transparent;
+    z-index: 1;
+}
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid white;
+    padding: 12px 24px;
+    border-radius: 48px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-links .separator {
+    color: white;
+    font-size: 16px;
+    opacity: 0.7;
+}
+.nav-bar a {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: clamp(14px, 2vw, 18px);
+
+
+}
+
+.nav-bar button {
+    padding: 5px 10px;
+    cursor: pointer;
+}
