@@ -23,20 +23,20 @@
 
 }
 
-h1,
-p {
+.homepageh1,
+.homepagep {
     display: inline-block;
     white-space: nowrap;
     overflow: hidden;
     width: 0;
 }
 
-h1 {
+.homepageh1 {
     font-size: 3rem;
     animation: typing 3s steps(30) 1s forwards;
 }
 
-p {
+.homepagep {
     font-size: 1.25rem;
     animation: typing 4s steps(45) 4s forwards;
     margin-top: 20px;

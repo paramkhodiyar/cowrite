@@ -38,8 +38,8 @@ function HomePage() {
             <Navbar />
             <div ref={vantaRef} className="vanta-container">
                 <div className="content">
-                    <h1>Welcome to the CoWrite!</h1>
-                    <p>Where Ideas Come Together, Stories are Shared....</p>
+                    <h1 className="homepageh1">Welcome to the CoWrite!</h1>
+                    <p className="homepagep">Where Ideas Come Together, Stories are Shared....</p>
                 </div>
             </div>
         </>

@@ -11,13 +11,15 @@ function Navbar() {
                 <TbPencilCode style={{fontSize:"30px"}}/> CoWrite
             </div>
             <div className="nav-links">
-                <a href="#home" className="nav-link">Home</a>
+                <a href="/" className="nav-link">Home</a>
                 <span className="separator">|</span>
-                <a href="#about" className="nav-link">Explore</a>
+                <a href="/components/explorepage/explorepage" className="nav-link">Explore</a>
                 <span className="separator">|</span>
                 <a href="#services" className="nav-link">Create</a>
                 <span className="separator">|</span>
                 <a href="#contact" className="nav-link ai">CoAI <HiMiniSparkles className="sparkle-icon" /></a>
+                <span className="separator">|</span>
+                <a href="/components/signup/signup" className="nav-link ai">Signup</a>
             </div>
             <div className="account-details">
                 <span className="accountholder"><GiHamburgerMenu /> <MdAccountCircle /></span>
