@@ -92,8 +92,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 5px;
 }
-
+.logged-in{
+    display: flex;
+    gap: 5px;
+}
 .accountholder {
     border: 1px solid white;
     display: flex;
@@ -108,4 +112,22 @@
 .accountholder:hover{
     cursor: pointer;
     background-color: rgba(255, 255, 255, 0.1);
+}
+.logout-button{
+    border: 1px solid white;
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+    border-radius: 24px;
+    background: none;
+    color: white;
+}
+.navbar-signup{
+    background-color: teal;
+    border: none;
+    border-radius: 8px;
+    color: white;
+
 }

@@ -5,6 +5,7 @@ import HomePage from "./components/homepage/homepage";
 import ExplorePage from "./components/explorepage/explorepage";
 import Signup from "./components/signup/signup";
 import CoAI from "./components/coai/coai";
+import Login from "./components/login/login";
 import "./App.css";
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/components/explorepage/explorepage" element={<ExplorePage />} />
         <Route path="/components/signup/signup" element={<Signup />} />
         <Route path="/components/coai/coai" element={<CoAI />}></Route>
+        <Route path="/components/login/login" element={<Login />}></Route>
       </Routes>
     </BrowserRouter>
   );
