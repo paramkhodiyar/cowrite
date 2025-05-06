@@ -16,31 +16,9 @@ Welcome to **CoWrite**! This platform is designed to help you create, manage, an
 - **AI Integration**: Gemini API
 - **API**: WordPress REST API,Spite API
 
-## Contributing
-
-We welcome contributions! Please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch:
-    ```bash
-    git checkout -b feature-name
-    ```
-3. Commit your changes:
-    ```bash
-    git commit -m "Add feature-name"
-    ```
-4. Push to your branch:
-    ```bash
-    git push origin feature-name
-    ```
-5. Open a pull request.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
 
-For questions or feedback, please reach out to [your-email@example.com](mailto:your-email@example.com).
+For questions or feedback, please reach out to [paramkhodiyar1008@gmail.com](mailto:paramkhodiyar1008@gmail.com).
 
 Happy blogging with CoWrite!
