@@ -37,6 +37,7 @@ const ExplorePage = () => {
     return (
         <>
             <VantaBackground>
+                <Navbar />
                 <div className="explore-container">
                     {/* <Navbar /> */}
                     <h1 className="explore-title">Explore Blogs</h1>
@@ -87,6 +88,7 @@ const ExplorePage = () => {
                         </button>
                     </div>
                 </div>
+                
             </VantaBackground>
         </>
     );
