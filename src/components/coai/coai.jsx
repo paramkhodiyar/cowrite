@@ -82,7 +82,7 @@ function CoAI() {
                     <textarea
                         className="chat-input"
                         rows="1"
-                        placeholder="Type a message..."
+                        placeholder="CoAI✨ to take your content to next level...."
                         value={prompt}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
