@@ -17,14 +17,14 @@ function Navbar() {
                 <span className="separator">|</span>
                 <Link to="/components/explorepage/explorepage" className="nav-link">Explore</Link>
                 <span className="separator">|</span>
-                <a href="#services" className="nav-link">Create</a> {/* Keep as <a> if it's an anchor link */}
+                <a href="#" className="nav-link">Create</a>
                 <span className="separator">|</span>
-                <a href="#contact" className="nav-link ai">CoAI <HiMiniSparkles className="sparkle-icon" /></a>  {/* Keep as <a> if anchor */}
-                <span className="separator">|</span>
-                <Link to="/components/signup/signup" className="nav-link ai">Signup</Link>
+                <Link to="/components/coai/coai" className="nav-link ai">CoAI <HiMiniSparkles className="sparkle-icon" /></Link>
+                {/* <span className="separator">|</span> */}
+                {/* <Link to="/components/signup/signup">Signup</Link> */}
             </div>
             <div className="account-details">
-                <span className="accountholder"><GiHamburgerMenu /> <MdAccountCircle /></span>
+            <Link to="/components/signup/signup"><span className="accountholder"><GiHamburgerMenu /> <MdAccountCircle /></span></Link>
             </div>
         </nav>
     );

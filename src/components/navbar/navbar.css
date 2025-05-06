@@ -38,7 +38,7 @@
     position: relative;
 }
 
-.nav-bar a:hover::after {
+/* .nav-bar a:hover::after {
     content: '';
     position: absolute;
     left: 0;
@@ -47,7 +47,7 @@
     height: 2px;
     background-color: white;
     transition: width 0.3s ease-in-out;
-}
+} */
 .sparkle-icon {
     color: #7CB9E8;
     font-size: 1.2em;
