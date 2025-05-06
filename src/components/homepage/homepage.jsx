@@ -26,7 +26,7 @@ function HomePage() {
                 <Navbar />
                 <div className="maincontent">
                     <h1 className="homepageh1">
-                        {user ? `Welcome ${user.displayName || user.email}` : 'Welcome to CoWrite'}
+                        {user ? `Welcome ${user.displayName || user.email} to CoWrite` : 'Welcome to CoWrite'}
                     </h1>
                     <p className="homepagep">Where Ideas Come Together and Stories Begin.</p>
                 </div>

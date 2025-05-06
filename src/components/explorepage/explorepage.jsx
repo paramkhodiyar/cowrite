@@ -37,8 +37,6 @@ const ExplorePage = () => {
                 <Navbar />
                 <div className="explore-container">
                     <h1 className="explore-title">Explore Blogs</h1>
-
-                    {/* Conditional loading inside explore-container */}
                     {loading ? (
                         <div className='loadercontainer'>
                             <div class="loader"></div>
