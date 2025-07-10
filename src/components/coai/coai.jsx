@@ -34,13 +34,8 @@ function CoAI() {
         try {
             const genAI = new GoogleGenerativeAI(apiKey);
             const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-            const chat = model.startChat({
-                history: [],
-                generationConfig: {
-                    maxOutputTokens: 500,
-                },
-            });
-            const result = await chat.sendMessage(trimmedPrompt);
+            
+            const result = await model.generateContent(trimmedPrompt);
             const text = result.response.text();
 
             setChatHistory((prev) => [...prev, { role: "ai", content: text }]);
@@ -48,7 +43,7 @@ function CoAI() {
             console.error("Error generating content:", error);
             setChatHistory((prev) => [
                 ...prev,
-                { role: "ai", content: "An error occurred while generating content." },
+                { role: "ai", content: "Sorry, I'm having trouble connecting right now. Please check your API key and try again." },
             ]);
         } finally {
             setLoading(false);

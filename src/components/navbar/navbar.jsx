@@ -45,9 +45,9 @@ function Navbar() {
             <div className="nav-links">
                 <Link to="/" className="nav-link">Home</Link>
                 <span className="separator">|</span>
-                <Link to="/components/explorepage/explorepage" className="nav-link">Explore</Link>
+                <Link to="/feed" className="nav-link">Feed</Link>
                 <span className="separator">|</span>
-                <a href="#" className="nav-link">Create</a>
+                <Link to="/create" className="nav-link">Create</Link>
                 <span className="separator">|</span>
                 <Link to="/components/coai/coai" className="nav-link ai">CoAI <HiMiniSparkles className="sparkle-icon" /></Link>
             </div>
