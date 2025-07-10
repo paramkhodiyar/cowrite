@@ -59,81 +59,78 @@ function CoAI() {
     };
 
     return (
-        <div className="ai-assistant">
-            <div className="ai-header">
-                <h3>✨ AI Writing Assistant</h3>
-                <button className="ai-close" onClick={onClose}>
-                    <IoClose />
-                </button>
-            </div>
-            
-            <div className="ai-chat-window">
-                {chatHistory.length === 0 && (
-                    <div className="ai-welcome">
-                        <p>Hi! I'm here to help you write better content. Ask me to:</p>
-                        <ul>
-                            <li>Improve your writing</li>
-                            <li>Generate ideas</li>
-                            <li>Fix grammar</li>
-                            <li>Expand on topics</li>
-                            <li>Create engaging titles</li>
-                        </ul>
+        <VantaBackground>
+            <div className="coai-container">
+                <div className="ai-assistant">
+                    <div className="ai-header">
+                        <h3>✨ AI Writing Assistant</h3>
+                        <button className="ai-close" onClick={onClose}>
+                            <IoClose />
+                        </button>
                     </div>
-                )}
+            
+                    <div className="ai-chat-window">
+                        {chatHistory.length === 0 && (
+                            <div className="ai-welcome">
+                                <p>Hi! I'm here to help you write better content. Ask me to:</p>
+                                <ul>
+                                    <li>Improve your writing</li>
+                                    <li>Generate ideas</li>
+                                    <li>Fix grammar</li>
+                                    <li>Expand on topics</li>
+                                    <li>Create engaging titles</li>
+                                </ul>
+                            </div>
+                        )}
                 
-                {chatHistory.map((msg, idx) => (
-                    <div
-                        key={idx}
-                        className={`ai-chat-bubble ${msg.role === "user" ? "ai-user-bubble" : "ai-ai-bubble"}`}
-                    >
-                        <div className="ai-message-content">
-                            {msg.content}
-                        </div>
-                        {msg.role === "ai" && (
-                            <button 
-                                className="ai-insert-btn"
-                                onClick={() => insertResponse(msg.content)}
-                                title="Insert this response into your post"
+                        {chatHistory.map((msg, idx) => (
+                            <div
+                                key={idx}
+                                className={`ai-chat-bubble ${msg.role === "user" ? "ai-user-bubble" : "ai-ai-bubble"}`}
                             >
-                                Insert
-                            </button>
+                                <div className="ai-message-content">
+                                    {msg.content}
+                                </div>
+                                {msg.role === "ai" && (
+                                    <button 
+                                        className="ai-insert-btn"
+                                        onClick={() => insertResponse(msg.content)}
+                                        title="Insert this response into your post"
+                                    >
+                                        Insert
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                
+                        {loading && (
+                            <div className="ai-chat-bubble ai-ai-bubble">
+                                <div className="ai-typing">
+                                    <div className="ai-dot"></div>
+                                    <div className="ai-dot"></div>
+                                    <div className="ai-dot"></div>
+                                </div>
+                            </div>
                         )}
                     </div>
-                ))}
-                
-                {loading && (
-                    <div className="ai-chat-bubble ai-ai-bubble">
-                        <div className="ai-typing">
-                            <div className="ai-dot"></div>
-                            <div className="ai-dot"></div>
-                            <div className="ai-dot"></div>
-                        </div>
-                    </div>
-                )}
-            </div>
             
-            <div className="ai-input-container">
-                <textarea
-                    className="ai-input"
-                    rows="2"
-                    placeholder="Ask me anything about your blog post..."
-                    value={prompt}
-                    onChange={handleInputChange}
-                    onKeyDown={handleKeyDown}
-                />
-                <button
-                    className="ai-send-button"
-                    onClick={generateContent}
-                    disabled={loading || !prompt.trim()}
-                >
-                    <IoSendSharp />
-                </button>
-            </div>
-        </div>
-    );
-}
-
-export default AIAssistant;
+                    <div className="ai-input-container">
+                        <textarea
+                            className="ai-input"
+                            rows="2"
+                            placeholder="Ask me anything about your blog post..."
+                            value={prompt}
+                            onChange={handleInputChange}
+                            onKeyDown={handleKeyDown}
+                        />
+                        <button
+                            className="ai-send-button"
+                            onClick={generateContent}
+                            disabled={loading || !prompt.trim()}
+                        >
+                            <IoSendSharp />
+                        </button>
+                    </div>
                 </div>
                 <div className="chat-input-container">
                     <textarea
