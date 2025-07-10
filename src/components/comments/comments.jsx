@@ -42,7 +42,7 @@ const CommentsSection = ({ postId, user, onUpdate }) => {
             // Ensure profile exists first
             const profileData = {
                 id: user.uid,
-                username: user.email?.split('@')[0] || `user_${Date.now()}`,
+                username: user.email?.split('@')[0] || `user_${user.uid.slice(-8)}`,
                 display_name: user.displayName || user.email?.split('@')[0] || 'User',
                 avatar_url: user.photoURL || ''
             };
@@ -57,6 +57,12 @@ const CommentsSection = ({ postId, user, onUpdate }) => {
             if (profileError) {
                 console.warn('Profile creation warning:', profileError);
             }
+
+            console.log('Creating comment with data:', {
+                post_id: postId,
+                author_id: user.uid,
+                content: newComment.trim()
+            });
 
             // Create the comment
             const { error } = await supabase

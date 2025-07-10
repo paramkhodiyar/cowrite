@@ -43,7 +43,7 @@ const ExplorePage = () => {
             // Create profile data
             const profileData = {
                 id: userId,
-                username: user?.email?.split('@')[0] || `user_${Date.now()}`,
+                username: user?.email?.split('@')[0] || `user_${userId.slice(-8)}`,
                 display_name: user?.displayName || user?.email?.split('@')[0] || 'User',
                 avatar_url: user?.photoURL || ''
             };
@@ -120,7 +120,7 @@ const ExplorePage = () => {
             // Create profile data
             const profileData = {
                 id: user.uid,
-                username: user.email?.split('@')[0] || `user_${Date.now()}`,
+                username: user.email?.split('@')[0] || `user_${user.uid.slice(-8)}`,
                 display_name: user.displayName || user.email?.split('@')[0] || 'User',
                 avatar_url: user.photoURL || ''
             };

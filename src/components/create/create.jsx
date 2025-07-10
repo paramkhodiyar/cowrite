@@ -146,7 +146,7 @@ function CreatePost() {
             // Create profile first, then post
             const profileData = {
                 id: user.uid,
-                username: user.email?.split('@')[0] || `user_${Date.now()}`,
+                username: user.email?.split('@')[0] || `user_${user.uid.slice(-8)}`,
                 display_name: user.displayName || user.email?.split('@')[0] || 'User',
                 avatar_url: user.photoURL || ''
             };
@@ -162,6 +162,14 @@ function CreatePost() {
             if (profileError) {
                 console.warn('Profile creation warning:', profileError);
             }
+
+            console.log('Creating post with data:', {
+                title: title.trim(),
+                content: content.trim(),
+                media_url: mediaUrl.trim() || null,
+                author_id: user.uid,
+                community_id: selectedCommunity
+            });
 
             // Create the post
             const { error } = await supabase
