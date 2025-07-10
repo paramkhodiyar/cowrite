@@ -39,18 +39,26 @@ const CommentsSection = ({ postId, user, onUpdate }) => {
 
         setSubmitting(true);
         try {
-            // First create the profile if it doesn't exist
+            // Ensure profile exists first
+            const profileData = {
+                id: user.uid,
+                username: user.email?.split('@')[0] || `user_${Date.now()}`,
+                display_name: user.displayName || user.email?.split('@')[0] || 'User',
+                avatar_url: user.photoURL || ''
+            };
+
             const { error: profileError } = await supabase
                 .from('profiles')
-                .upsert({
-                    id: user.uid,
-                    username: user.email?.split('@')[0] || 'user',
-                    display_name: user.displayName || '',
-                    avatar_url: user.photoURL || ''
-                }, { onConflict: 'id' });
+                .upsert(profileData, { 
+                    onConflict: 'id',
+                    ignoreDuplicates: false 
+                });
 
-            if (profileError) console.warn('Profile upsert warning:', profileError);
+            if (profileError) {
+                console.warn('Profile creation warning:', profileError);
+            }
 
+            // Create the comment
             const { error } = await supabase
                 .from('comments')
                 .insert({
@@ -61,12 +69,15 @@ const CommentsSection = ({ postId, user, onUpdate }) => {
             
             if (error) throw error;
             
+            console.log('Comment posted successfully');
+            
             setNewComment('');
             fetchComments();
             onUpdate(); // Update post comments count
         } catch (error) {
             console.error('Error submitting comment:', error);
-            alert('Failed to post comment');
+            console.error('Error details:', error.message, error.details, error.hint);
+            alert(`Failed to post comment: ${error.message || 'Unknown error'}`);
         } finally {
             setSubmitting(false);
         }

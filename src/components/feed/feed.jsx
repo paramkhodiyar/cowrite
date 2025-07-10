@@ -40,20 +40,25 @@ const ExplorePage = () => {
 
     const autoJoinCoWrite = async (userId) => {
         try {
-            // Ensure user profile exists
+            // Create profile data
+            const profileData = {
+                id: userId,
+                username: user?.email?.split('@')[0] || `user_${Date.now()}`,
+                display_name: user?.displayName || user?.email?.split('@')[0] || 'User',
+                avatar_url: user?.photoURL || ''
+            };
+
+            // Upsert profile
             const { error } = await supabase
                 .from('profiles')
-                .upsert({
-                    id: userId,
-                    username: user?.email?.split('@')[0] || `user_${Date.now()}`,
-                    display_name: user?.displayName || '',
-                    avatar_url: user?.photoURL || ''
-                }, { 
+                .upsert(profileData, { 
                     onConflict: 'id',
                     ignoreDuplicates: false 
                 });
 
-            if (error) console.warn('Profile upsert warning:', error);
+            if (error) {
+                console.warn('Profile creation warning:', error);
+            }
 
             // Auto-join CoWrite community
             const { data: coWriteCommunity } = await supabase
@@ -73,7 +78,9 @@ const ExplorePage = () => {
                         ignoreDuplicates: true 
                     });
                 
-                if (joinError) console.warn('Auto-join warning:', joinError);
+                if (joinError) {
+                    console.warn('Auto-join warning:', joinError);
+                }
             }
         } catch (error) {
             console.error('Error auto-joining CoWrite:', error);
@@ -110,20 +117,23 @@ const ExplorePage = () => {
         if (!user) return;
         setJoiningCommunity(communityId);
         try {
-            // First, ensure user profile exists
+            // Create profile data
+            const profileData = {
+                id: user.uid,
+                username: user.email?.split('@')[0] || `user_${Date.now()}`,
+                display_name: user.displayName || user.email?.split('@')[0] || 'User',
+                avatar_url: user.photoURL || ''
+            };
+
+            // Upsert profile
             const { error: profileError } = await supabase
                 .from('profiles')
-                .upsert({
-                    id: user.uid,
-                    username: user.email?.split('@')[0] || `user_${Date.now()}`,
-                    display_name: user.displayName || '',
-                    avatar_url: user.photoURL || ''
-                }, { 
+                .upsert(profileData, { 
                     onConflict: 'id',
                     ignoreDuplicates: false 
                 });
 
-            if (profileError && profileError.code !== '23505') {
+            if (profileError) {
                 console.warn('Profile upsert warning:', profileError);
             }
 
@@ -140,10 +150,12 @@ const ExplorePage = () => {
             
             if (joinError) throw joinError;
             
+            console.log('Successfully joined community');
             fetchJoinedCommunities();
             fetchCommunities(); // Refresh to update member counts
         } catch (error) {
             console.error('Error joining community:', error);
+            console.error('Error details:', error.message, error.details, error.hint);
             // Always refresh joined communities, even on error
             fetchJoinedCommunities();
         } finally {

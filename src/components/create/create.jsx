@@ -143,9 +143,27 @@ function CreatePost() {
     const confirmPost = async () => {
         setLoading(true);
         try {
-            // Ensure user profile exists before creating post
-            await ensureUserProfile(user.uid);
+            // Create profile first, then post
+            const profileData = {
+                id: user.uid,
+                username: user.email?.split('@')[0] || `user_${Date.now()}`,
+                display_name: user.displayName || user.email?.split('@')[0] || 'User',
+                avatar_url: user.photoURL || ''
+            };
 
+            // Upsert profile
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .upsert(profileData, { 
+                    onConflict: 'id',
+                    ignoreDuplicates: false 
+                });
+
+            if (profileError) {
+                console.warn('Profile creation warning:', profileError);
+            }
+
+            // Create the post
             const { error } = await supabase
                 .from('posts')
                 .insert({
@@ -158,6 +176,8 @@ function CreatePost() {
             
             if (error) throw error;
             
+            console.log('Post created successfully');
+            
             // Reset form
             setTitle("");
             setContent("");
@@ -166,10 +186,14 @@ function CreatePost() {
             setShowConfirmation(false);
             
             alert('Post created successfully!');
-            navigate('/explore');
+            // Small delay to ensure database is updated
+            setTimeout(() => {
+                navigate('/explore');
+            }, 500);
         } catch (error) {
             console.error('Error creating post:', error);
-            alert('Failed to create post. Please try again.');
+            console.error('Error details:', error.message, error.details, error.hint);
+            alert(`Failed to create post: ${error.message || 'Unknown error'}`);
         } finally {
             setLoading(false);
         }
