@@ -41,7 +41,7 @@ function CoAI() {
 
         try {
             const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.0-pro" });
+            const model = genAI.getGenerativeModel({ model: "gemini-pro" });
             
             const result = await model.generateContent(trimmedPrompt);
             const text = result.response.text();
