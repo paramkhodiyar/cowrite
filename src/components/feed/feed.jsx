@@ -14,10 +14,15 @@ const ExplorePage = () => {
     const [communities, setCommunities] = useState([]);
     const [joinedCommunities, setJoinedCommunities] = useState([]);
     const [selectedCommunity, setSelectedCommunity] = useState('all');
+    const [joiningCommunity, setJoiningCommunity] = useState(null);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
+            if (currentUser) {
+                // Auto-join CoWrite community for new users
+                autoJoinCoWrite(currentUser.uid);
+            }
         });
         return () => unsubscribe();
     }, []);
@@ -33,6 +38,39 @@ const ExplorePage = () => {
         fetchPosts();
     }, [selectedCommunity, user]);
 
+    const autoJoinCoWrite = async (userId) => {
+        try {
+            // First ensure user profile exists
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .upsert({
+                    id: userId,
+                    username: user?.email?.split('@')[0] || 'user',
+                    display_name: user?.displayName || '',
+                    avatar_url: user?.photoURL || ''
+                }, { onConflict: 'id' });
+
+            if (profileError) console.warn('Profile upsert warning:', profileError);
+
+            // Auto-join CoWrite community
+            const coWriteCommunity = await supabase
+                .from('communities')
+                .select('id')
+                .eq('name', 'CoWrite')
+                .single();
+
+            if (coWriteCommunity.data) {
+                await supabase
+                    .from('community_members')
+                    .upsert({
+                        community_id: coWriteCommunity.data.id,
+                        user_id: userId
+                    }, { onConflict: 'community_id,user_id' });
+            }
+        } catch (error) {
+            console.error('Error auto-joining CoWrite:', error);
+        }
+    };
     const fetchCommunities = async () => {
         try {
             const { data, error } = await supabase
@@ -62,13 +100,33 @@ const ExplorePage = () => {
 
     const handleJoinCommunity = async (communityId) => {
         if (!user) return;
+        setJoiningCommunity(communityId);
         try {
+            // Ensure user profile exists
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .upsert({
+                    id: user.uid,
+                    username: user.email?.split('@')[0] || 'user',
+                    display_name: user.displayName || '',
+                    avatar_url: user.photoURL || ''
+                }, { onConflict: 'id' });
+
+            if (profileError) console.warn('Profile upsert warning:', profileError);
+
+            const { error } = await supabase
             await supabase
                 .from('community_members')
                 .insert({ community_id: communityId, user_id: user.uid });
+            
+            if (error) throw error;
             fetchJoinedCommunities();
+            fetchCommunities(); // Refresh to update member counts
         } catch (error) {
+            console.error('Error joining community:', error);
             alert('Failed to join community');
+        } finally {
+            setJoiningCommunity(null);
         }
     };
 
@@ -81,14 +139,18 @@ const ExplorePage = () => {
             return;
         }
         try {
-            await supabase
+            const { error } = await supabase
                 .from('community_members')
                 .delete()
                 .eq('community_id', communityId)
                 .eq('user_id', user.uid);
+            
+            if (error) throw error;
             fetchJoinedCommunities();
+            fetchCommunities(); // Refresh to update member counts
             if (selectedCommunity === communityId) setSelectedCommunity('all');
         } catch (error) {
+            console.error('Error leaving community:', error);
             alert('Failed to leave community');
         }
     };
@@ -105,9 +167,11 @@ const ExplorePage = () => {
                     post_likes (user_id)
                 `)
                 .order('created_at', { ascending: false });
+            
             if (selectedCommunity !== 'all') {
                 query = query.eq('community_id', selectedCommunity);
             }
+            
             const { data, error } = await query;
             if (error) throw error;
             setPosts(data || []);
@@ -118,6 +182,34 @@ const ExplorePage = () => {
         }
     };
 
+    const handleLike = async (postId) => {
+        if (!user) return;
+        
+        try {
+            const post = posts.find(p => p.id === postId);
+            const isLiked = post.post_likes && post.post_likes.some(like => like.user_id === user.uid);
+            
+            if (isLiked) {
+                // Unlike
+                const { error } = await supabase
+                    .from('post_likes')
+                    .delete()
+                    .eq('post_id', postId)
+                    .eq('user_id', user.uid);
+                if (error) throw error;
+            } else {
+                // Like
+                const { error } = await supabase
+                    .from('post_likes')
+                    .insert({ post_id: postId, user_id: user.uid });
+                if (error) throw error;
+            }
+            
+            fetchPosts(); // Refresh posts to update like counts
+        } catch (error) {
+            console.error('Error toggling like:', error);
+        }
+    };
     const isJoined = (communityId) => joinedCommunities.includes(communityId);
 
     return (
@@ -131,7 +223,7 @@ const ExplorePage = () => {
                             className={selectedCommunity === 'all' ? 'active' : ''}
                             onClick={() => setSelectedCommunity('all')}
                         >
-                            Mixed Feed
+                            🌐 All Communities
                         </button>
                         {communities.map(community => (
                             <div key={community.id} className="community-row">
@@ -142,10 +234,25 @@ const ExplorePage = () => {
                                     {community.name} ({community.member_count})
                                 </button>
                                 {isJoined(community.id) ? (
-                                    <span className="joined-label">Joined</span>
+                                    community.name === 'CoWrite' ? (
+                                        <span className="joined-label">✓ Member</span>
+                                    ) : (
+                                        <button 
+                                            className="leave-btn" 
+                                            onClick={() => handleLeaveCommunity(community.id)}
+                                            title="Leave community"
+                                        >
+                                            ✓
+                                        </button>
+                                    )
                                 ) : (
-                                    <button className="join-btn" onClick={() => handleJoinCommunity(community.id)} title="Join">
-                                        +
+                                    <button 
+                                        className="join-btn" 
+                                        onClick={() => handleJoinCommunity(community.id)} 
+                                        disabled={joiningCommunity === community.id}
+                                        title="Join community"
+                                    >
+                                        {joiningCommunity === community.id ? '...' : '+'}
                                     </button>
                                 )}
                             </div>
@@ -160,7 +267,12 @@ const ExplorePage = () => {
                         </div>
                     ) : posts.length === 0 ? (
                         <div className="no-posts">
-                            <p>No posts found. Be the first to create one!</p>
+                            <p>
+                                {selectedCommunity === 'all' 
+                                    ? 'No posts found. Be the first to create one!' 
+                                    : `No posts in this community yet. Be the first to post!`
+                                }
+                            </p>
                         </div>
                     ) : (
                         <div className="posts-container">

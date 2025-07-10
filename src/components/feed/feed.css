@@ -131,7 +131,7 @@
     margin-bottom: 6px;
 }
 
-.join-btn {
+.join-btn, .leave-btn {
     background: #488f8c;
     color: #fff;
     border: none;
@@ -146,15 +146,29 @@
     transition: background 0.2s;
 }
 
-.join-btn:hover {
+.join-btn:hover:not(:disabled) {
     background: #367572;
+}
+
+.join-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.leave-btn {
+    background: #4caf50;
+    font-size: 1rem;
+}
+
+.leave-btn:hover {
+    background: #45a049;
 }
 
 .joined-label {
     color: #4caf50;
     font-weight: 600;
     font-size: 0.95rem;
-    margin-left: 4px;
+    font-size: 0.8rem;
 }
 
 @media (max-width: 900px) {
@@ -163,6 +177,7 @@
         width: 98%;
         height: auto;
         gap: 0;
+        top: 5%;
     }
     .feed-sidebar {
         width: 100%;
@@ -170,6 +185,8 @@
         margin-bottom: 16px;
         padding: 12px;
         border-radius: 12px;
+        max-height: none;
+        overflow-y: visible;
     }
     .feed-main {
         width: 100%;
@@ -178,12 +195,21 @@
         padding: 10px;
         border-radius: 12px;
     }
+    .community-filter {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 8px;
+    }
+    .community-row {
+        margin-bottom: 0;
+    }
 }
 
 @media (max-width: 600px) {
     .feed-container {
         width: 100vw;
         padding: 0;
+        top: 3%;
     }
     .feed-sidebar, .feed-main {
         border-radius: 0;
@@ -194,5 +220,17 @@
     }
     .posts-container {
         gap: 10px;
+    }
+    .community-filter {
+        grid-template-columns: 1fr;
+    }
+    .community-row button {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+    .join-btn, .leave-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 1rem;
     }
 }

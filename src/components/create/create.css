@@ -194,6 +194,7 @@
         width: 98vw;
         min-width: unset;
         padding: 0;
+        top: 5%;
     }
     .create-main {
         padding: 12px;
@@ -208,6 +209,7 @@
     .create-container {
         width: 100vw;
         padding: 0;
+        top: 3%;
     }
     .create-main {
         padding: 6px;

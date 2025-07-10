@@ -35,6 +35,35 @@ function CreatePost() {
 
     const fetchJoinedCommunities = async (userId) => {
         try {
+            // Ensure user profile exists first
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .upsert({
+                    id: userId,
+                    username: user?.email?.split('@')[0] || 'user',
+                    display_name: user?.displayName || '',
+                    avatar_url: user?.photoURL || ''
+                }, { onConflict: 'id' });
+
+            if (profileError) console.warn('Profile upsert warning:', profileError);
+
+            // Auto-join CoWrite community if not already joined
+            const coWriteCommunity = await supabase
+                .from('communities')
+                .select('id')
+                .eq('name', 'CoWrite')
+                .single();
+
+            if (coWriteCommunity.data) {
+                await supabase
+                    .from('community_members')
+                    .upsert({
+                        community_id: coWriteCommunity.data.id,
+                        user_id: userId
+                    }, { onConflict: 'community_id,user_id' });
+            }
+
+            // Fetch joined communities
             const { data, error } = await supabase
                 .from('community_members')
                 .select('community_id, communities!inner(id, name)')

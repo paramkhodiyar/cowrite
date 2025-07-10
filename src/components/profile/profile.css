@@ -205,6 +205,7 @@
 @media (max-width: 900px) {
     .profile-container {
         padding: 10px;
+        top: 5%;
     }
     .profile-header {
         flex-direction: column;
@@ -219,6 +220,7 @@
 @media (max-width: 600px) {
     .profile-container {
         padding: 4px;
+        top: 3%;
     }
     .profile-header {
         gap: 4px;
