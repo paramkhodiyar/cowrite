@@ -115,7 +115,6 @@ const ExplorePage = () => {
             if (profileError) console.warn('Profile upsert warning:', profileError);
 
             const { error } = await supabase
-            await supabase
                 .from('community_members')
                 .insert({ community_id: communityId, user_id: user.uid });
             
