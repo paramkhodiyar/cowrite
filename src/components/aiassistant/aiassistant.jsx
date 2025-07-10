@@ -54,7 +54,7 @@ function AIAssistant({ onResponse, onClose }) {
             let errorMessage = "Sorry, I'm having trouble connecting right now.";
             if (error.message?.includes('API_KEY')) {
                 errorMessage = "Invalid API key. Please check your Google AI API key in environment variables.";
-            } else if error.message?.includes('quota')) {
+            } else if (error.message?.includes('quota')) {
                 errorMessage = "API quota exceeded. Please try again later.";
             }
             setChatHistory((prev) => [
