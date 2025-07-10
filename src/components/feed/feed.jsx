@@ -1,112 +1,154 @@
-import React, { useState } from "react";
-import VantaBackground from "../vantabackground/vantabackground";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { IoSendSharp } from "react-icons/io5";
-import Navbar from "../navbar/navbar";
-import "./coai.css";
+import React, { useEffect, useState } from 'react';
+import { supabase } from '../../supabase';
+import { auth } from '../../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import Navbar from '../navbar/navbar';
+import VantaBackground from '../vantabackground/vantabackground';
+import PostCard from '../postcard/postcard';
+import './feed.css';
 
-function CoAI() {
-    const [prompt, setPrompt] = useState("");
-    const [chatHistory, setChatHistory] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const apiKey = import.meta.env.VITE_GOOGLE_GEN_AI_API_KEY;
+const FeedPage = () => {
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState(null);
+    const [communities, setCommunities] = useState([]);
+    const [selectedCommunity, setSelectedCommunity] = useState('all');
 
-    const handleInputChange = (event) => {
-        setPrompt(event.target.value);
-    };
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+        });
+        return () => unsubscribe();
+    }, []);
 
-    const handleKeyDown = (event) => {
-        if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault();
-            generateContent();
-        }
-    };
+    useEffect(() => {
+        fetchCommunities();
+        fetchPosts();
+    }, [selectedCommunity]);
 
-    const generateContent = async () => {
-        const trimmedPrompt = prompt.trim();
-        if (!trimmedPrompt) return;
-
-        // Check if API key exists
-        if (!apiKey) {
-            setChatHistory((prev) => [
-                ...prev,
-                { role: "ai", content: "API key is missing. Please check your environment variables." },
-            ]);
-            return;
-        }
-        const newChat = { role: "user", content: trimmedPrompt };
-        setChatHistory((prev) => [...prev, newChat]);
-        setPrompt("");
-        setLoading(true);
-
+    const fetchCommunities = async () => {
         try {
-            const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+            const { data, error } = await supabase
+                .from('communities')
+                .select('*')
+                .order('member_count', { ascending: false });
             
-            const result = await model.generateContent(trimmedPrompt);
-            const text = result.response.text();
-
-            setChatHistory((prev) => [...prev, { role: "ai", content: text }]);
+            if (error) throw error;
+            setCommunities(data || []);
         } catch (error) {
-            console.error("Error generating content:", error);
-            let errorMessage = "Sorry, I'm having trouble connecting right now.";
-            if (error.message?.includes('API_KEY')) {
-                errorMessage = "Invalid API key. Please check your Google AI API key.";
-            } else if (error.message?.includes('quota')) {
-                errorMessage = "API quota exceeded. Please try again later.";
+            console.error('Error fetching communities:', error);
+        }
+    };
+
+    const fetchPosts = async () => {
+        setLoading(true);
+        try {
+            let query = supabase
+                .from('posts')
+                .select(`
+                    *,
+                    profiles:author_id (username, display_name, avatar_url),
+                    communities (name),
+                    post_likes (user_id)
+                `)
+                .order('created_at', { ascending: false });
+
+            if (selectedCommunity !== 'all') {
+                query = query.eq('community_id', selectedCommunity);
             }
-            setChatHistory((prev) => [
-                ...prev,
-                { role: "ai", content: errorMessage },
-            ]);
+
+            const { data, error } = await query;
+            
+            if (error) throw error;
+            setPosts(data || []);
+        } catch (error) {
+            console.error('Error fetching posts:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleLike = async (postId) => {
+        if (!user) return;
+
+        try {
+            const { data: existingLike } = await supabase
+                .from('post_likes')
+                .select('id')
+                .eq('post_id', postId)
+                .eq('user_id', user.uid)
+                .single();
+
+            if (existingLike) {
+                await supabase
+                    .from('post_likes')
+                    .delete()
+                    .eq('post_id', postId)
+                    .eq('user_id', user.uid);
+            } else {
+                await supabase
+                    .from('post_likes')
+                    .insert({ post_id: postId, user_id: user.uid });
+            }
+
+            fetchPosts();
+        } catch (error) {
+            console.error('Error handling like:', error);
         }
     };
 
     return (
         <VantaBackground>
             <Navbar />
-            <div className="coai-wrapper">
-                <div className="chat-window">
-                    {chatHistory.map((msg, idx) => (
-                        <div
-                            key={idx}
-                            className={`chat-bubble ${msg.role === "user" ? "user-bubble" : "ai-bubble"}`}
+            <div className="feed-container">
+                <div className="feed-sidebar">
+                    <h3>Communities</h3>
+                    <div className="community-filter">
+                        <button 
+                            className={selectedCommunity === 'all' ? 'active' : ''}
+                            onClick={() => setSelectedCommunity('all')}
                         >
-                            {msg.content}
+                            All Posts
+                        </button>
+                        {communities.map(community => (
+                            <button
+                                key={community.id}
+                                className={selectedCommunity === community.id ? 'active' : ''}
+                                onClick={() => setSelectedCommunity(community.id)}
+                            >
+                                {community.name} ({community.member_count})
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="feed-main">
+                    <h1 className="feed-title">Feed</h1>
+                    {loading ? (
+                        <div className="loader-container">
+                            <div className="loader"></div>
                         </div>
-                    ))}
-                    {loading && (
-                        <div className="chat-bubble ai-bubble">
-                            <div className="typing">
-                                <div className="dot"></div>
-                                <div className="dot"></div>
-                                <div className="dot"></div>
-                            </div>
+                    ) : posts.length === 0 ? (
+                        <div className="no-posts">
+                            <p>No posts found. Be the first to create one!</p>
+                        </div>
+                    ) : (
+                        <div className="posts-container">
+                            {posts.map(post => (
+                                <PostCard
+                                    key={post.id}
+                                    post={post}
+                                    user={user}
+                                    onLike={handleLike}
+                                    onUpdate={fetchPosts}
+                                />
+                            ))}
                         </div>
                     )}
-                </div>
-                <div className="chat-input-container">
-                    <textarea
-                        className="chat-input"
-                        rows="1"
-                        placeholder="CoAI✨ to take your content to next level...."
-                        value={prompt}
-                        onChange={handleInputChange}
-                        onKeyDown={handleKeyDown}
-                    />
-                    <button
-                        className="send-button"
-                        onClick={generateContent}
-                        disabled={loading}
-                    >
-                       <IoSendSharp style={{ display: "flex", justifyContent: "center", alignItems: "center" }}/>
-                    </button>
                 </div>
             </div>
         </VantaBackground>
     );
-}
+};
 
-export default CoAI;
+export default FeedPage;
