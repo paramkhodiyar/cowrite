@@ -35,43 +35,78 @@ function CreatePost() {
 
     const fetchJoinedCommunities = async (userId) => {
         try {
-            // Ensure user profile exists first
-            const { error: profileError } = await supabase
+            // First ensure user profile exists
+            await ensureUserProfile(userId);
+            
+            // Auto-join CoWrite community
+            await autoJoinCoWrite(userId);
+            
+            const { data, error } = await supabase
+                .from('community_members')
+                .select(`
+                    community_id,
+                    communities!inner(id, name)
+                `)
+                .eq('user_id', userId);
+                
+            if (error) throw error;
+            
+            const communities = data ? data.map(cm => cm.communities) : [];
+            setJoinedCommunities(communities);
+        } catch (error) {
+            console.error('Error fetching joined communities:', error);
+            // If there's an error, still try to show available communities
+            setJoinedCommunities([]);
+        }
+    };
+
+    const ensureUserProfile = async (userId) => {
+        try {
+            const { error } = await supabase
                 .from('profiles')
                 .upsert({
                     id: userId,
-                    username: user?.email?.split('@')[0] || 'user',
+                    username: user?.email?.split('@')[0] || `user_${Date.now()}`,
                     display_name: user?.displayName || '',
                     avatar_url: user?.photoURL || ''
-                }, { onConflict: 'id' });
+                }, { 
+                    onConflict: 'id',
+                    ignoreDuplicates: false 
+                });
+            
+            if (error) {
+                console.warn('Profile upsert warning:', error);
+            }
+        } catch (error) {
+            console.error('Error ensuring user profile:', error);
+        }
+    };
 
-            if (profileError) console.warn('Profile upsert warning:', profileError);
-
-            // Auto-join CoWrite community if not already joined
-            const coWriteCommunity = await supabase
+    const autoJoinCoWrite = async (userId) => {
+        try {
+            const { data: coWriteCommunity } = await supabase
                 .from('communities')
                 .select('id')
                 .eq('name', 'CoWrite')
                 .single();
 
-            if (coWriteCommunity.data) {
-                await supabase
+            if (coWriteCommunity) {
+                const { error } = await supabase
                     .from('community_members')
                     .upsert({
-                        community_id: coWriteCommunity.data.id,
+                        community_id: coWriteCommunity.id,
                         user_id: userId
-                    }, { onConflict: 'community_id,user_id' });
+                    }, { 
+                        onConflict: 'community_id,user_id',
+                        ignoreDuplicates: true 
+                    });
+                
+                if (error) {
+                    console.warn('Auto-join CoWrite warning:', error);
+                }
             }
-
-            // Fetch joined communities
-            const { data, error } = await supabase
-                .from('community_members')
-                .select('community_id, communities!inner(id, name)')
-                .eq('user_id', userId);
-            if (error) throw error;
-            setJoinedCommunities(data ? data.map(cm => cm.communities) : []);
         } catch (error) {
-            console.error('Error fetching joined communities:', error);
+            console.error('Error auto-joining CoWrite:', error);
         }
     };
 
@@ -87,17 +122,8 @@ function CreatePost() {
     const confirmPost = async () => {
         setLoading(true);
         try {
-            // Ensure user profile exists
-            const { error: profileError } = await supabase
-                .from('profiles')
-                .upsert({
-                    id: user.uid,
-                    username: user.email?.split('@')[0] || 'user',
-                    display_name: user.displayName || '',
-                    avatar_url: user.photoURL || ''
-                }, { onConflict: 'id' });
-
-            if (profileError) console.warn('Profile upsert warning:', profileError);
+            // Ensure user profile exists before creating post
+            await ensureUserProfile(user.uid);
 
             const { error } = await supabase
                 .from('posts')
@@ -119,10 +145,10 @@ function CreatePost() {
             setShowConfirmation(false);
             
             alert('Post created successfully!');
-            navigate('/feed');
+            navigate('/explore');
         } catch (error) {
             console.error('Error creating post:', error);
-            alert('Failed to create post');
+            alert('Failed to create post. Please try again.');
         } finally {
             setLoading(false);
         }

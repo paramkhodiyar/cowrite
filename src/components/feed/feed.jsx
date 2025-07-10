@@ -40,32 +40,40 @@ const ExplorePage = () => {
 
     const autoJoinCoWrite = async (userId) => {
         try {
-            // First ensure user profile exists
-            const { error: profileError } = await supabase
+            // Ensure user profile exists
+            const { error } = await supabase
                 .from('profiles')
                 .upsert({
                     id: userId,
-                    username: user?.email?.split('@')[0] || 'user',
+                    username: user?.email?.split('@')[0] || `user_${Date.now()}`,
                     display_name: user?.displayName || '',
                     avatar_url: user?.photoURL || ''
-                }, { onConflict: 'id' });
+                }, { 
+                    onConflict: 'id',
+                    ignoreDuplicates: false 
+                });
 
-            if (profileError) console.warn('Profile upsert warning:', profileError);
+            if (error) console.warn('Profile upsert warning:', error);
 
             // Auto-join CoWrite community
-            const coWriteCommunity = await supabase
+            const { data: coWriteCommunity } = await supabase
                 .from('communities')
                 .select('id')
                 .eq('name', 'CoWrite')
                 .single();
 
-            if (coWriteCommunity.data) {
-                await supabase
+            if (coWriteCommunity) {
+                const { error: joinError } = await supabase
                     .from('community_members')
                     .upsert({
-                        community_id: coWriteCommunity.data.id,
+                        community_id: coWriteCommunity.id,
                         user_id: userId
-                    }, { onConflict: 'community_id,user_id' });
+                    }, { 
+                        onConflict: 'community_id,user_id',
+                        ignoreDuplicates: true 
+                    });
+                
+                if (joinError) console.warn('Auto-join warning:', joinError);
             }
         } catch (error) {
             console.error('Error auto-joining CoWrite:', error);
@@ -102,28 +110,38 @@ const ExplorePage = () => {
         if (!user) return;
         setJoiningCommunity(communityId);
         try {
-            // Ensure user profile exists
-            const { error: profileError } = await supabase
+            // Ensure user profile exists first
+            const { error } = await supabase
                 .from('profiles')
                 .upsert({
                     id: user.uid,
-                    username: user.email?.split('@')[0] || 'user',
+                    username: user.email?.split('@')[0] || `user_${Date.now()}`,
                     display_name: user.displayName || '',
                     avatar_url: user.photoURL || ''
-                }, { onConflict: 'id' });
+                }, { 
+                    onConflict: 'id',
+                    ignoreDuplicates: false 
+                });
 
-            if (profileError) console.warn('Profile upsert warning:', profileError);
+            if (error) console.warn('Profile upsert warning:', error);
 
-            const { error } = await supabase
+            // Now join the community
+            const { error: joinError } = await supabase
                 .from('community_members')
                 .insert({ community_id: communityId, user_id: user.uid });
             
-            if (error) throw error;
+            if (joinError) throw joinError;
+            
             fetchJoinedCommunities();
             fetchCommunities(); // Refresh to update member counts
         } catch (error) {
             console.error('Error joining community:', error);
-            alert('Failed to join community');
+            if (error.code === '23505') {
+                // Duplicate key error - user already joined
+                fetchJoinedCommunities();
+            } else {
+                alert('Failed to join community. Please try again.');
+            }
         } finally {
             setJoiningCommunity(null);
         }
