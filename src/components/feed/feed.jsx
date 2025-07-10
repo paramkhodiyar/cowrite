@@ -161,7 +161,7 @@ const ExplorePage = () => {
                 .from('posts')
                 .select(`
                     *,
-                    profiles:author_id (username, display_name, avatar_url),
+                    profiles!posts_author_id_fkey (username, display_name, avatar_url),
                     communities (name),
                     post_likes (user_id)
                 `)
