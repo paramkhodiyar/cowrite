@@ -49,7 +49,9 @@ function Navbar() {
                 <span className="separator">|</span>
                 <Link to="/create" className="nav-link">Create</Link>
                 <span className="separator">|</span>
-                <Link to="/components/coai/coai" className="nav-link ai">CoAI <HiMiniSparkles className="sparkle-icon" /></Link>
+                <Link to="/components/coai/coai" className="nav-link ai">
+                    CoAI <HiMiniSparkles className="sparkle-icon" />
+                </Link>
             </div>
             <div className="account-details">
                 {!isLoggedIn ? (
@@ -58,9 +60,9 @@ function Navbar() {
                     </Link>
                 ) : (
                     <div className="logged-in">
-                        <span className="accountholder">
+                        <Link to="/profile" className="accountholder">
                             <MdAccountCircle /> <GiHamburgerMenu />
-                        </span>
+                        </Link>
                         <button className="logout-button" onClick={handleLogout}>Log Out</button>
                     </div>
                 )}

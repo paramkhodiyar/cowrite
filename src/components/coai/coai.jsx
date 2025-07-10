@@ -26,6 +26,14 @@ function CoAI() {
         const trimmedPrompt = prompt.trim();
         if (!trimmedPrompt) return;
 
+        // Check if API key exists
+        if (!apiKey) {
+            setChatHistory((prev) => [
+                ...prev,
+                { role: "ai", content: "API key is missing. Please check your environment variables." },
+            ]);
+            return;
+        }
         const newChat = { role: "user", content: trimmedPrompt };
         setChatHistory((prev) => [...prev, newChat]);
         setPrompt("");
@@ -41,9 +49,15 @@ function CoAI() {
             setChatHistory((prev) => [...prev, { role: "ai", content: text }]);
         } catch (error) {
             console.error("Error generating content:", error);
+            let errorMessage = "Sorry, I'm having trouble connecting right now.";
+            if (error.message?.includes('API_KEY')) {
+                errorMessage = "Invalid API key. Please check your Google AI API key.";
+            } else if (error.message?.includes('quota')) {
+                errorMessage = "API quota exceeded. Please try again later.";
+            }
             setChatHistory((prev) => [
                 ...prev,
-                { role: "ai", content: "Sorry, I'm having trouble connecting right now. Please check your API key and try again." },
+                { role: "ai", content: errorMessage },
             ]);
         } finally {
             setLoading(false);

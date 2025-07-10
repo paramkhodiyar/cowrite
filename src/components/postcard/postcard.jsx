@@ -11,7 +11,7 @@ const PostCard = ({ post, user, onLike, onUpdate }) => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const isLiked = post.post_likes?.some(like => like.user_id === user?.uid);
+    const isLiked = user && post.post_likes?.some(like => like.user_id === user.uid);
     const isAuthor = user?.uid === post.author_id;
     const canEdit = isAuthor && post.edit_count < 2;
 

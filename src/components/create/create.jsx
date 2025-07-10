@@ -59,6 +59,18 @@ function CreatePost() {
     const confirmPost = async () => {
         setLoading(true);
         try {
+            // Ensure user profile exists
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .upsert({
+                    id: user.uid,
+                    username: user.email?.split('@')[0] || 'user',
+                    display_name: user.displayName || '',
+                    avatar_url: user.photoURL || ''
+                }, { onConflict: 'id' });
+
+            if (profileError) console.warn('Profile upsert warning:', profileError);
+
             const { error } = await supabase
                 .from('posts')
                 .insert({
@@ -204,4 +216,5 @@ function CreatePost() {
         </VantaBackground>
     );
 }
-export default CreatePost()
+
+export default CreatePost;

@@ -39,6 +39,18 @@ const CommentsSection = ({ postId, user, onUpdate }) => {
 
         setSubmitting(true);
         try {
+            // First create the profile if it doesn't exist
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .upsert({
+                    id: user.uid,
+                    username: user.email?.split('@')[0] || 'user',
+                    display_name: user.displayName || '',
+                    avatar_url: user.photoURL || ''
+                }, { onConflict: 'id' });
+
+            if (profileError) console.warn('Profile upsert warning:', profileError);
+
             const { error } = await supabase
                 .from('comments')
                 .insert({

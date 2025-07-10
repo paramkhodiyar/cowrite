@@ -51,8 +51,8 @@ const Profile = () => {
                 // Create profile if it doesn't exist
                 const newProfile = {
                     id: userId,
-                    username: user?.email?.split('@')[0] || 'user',
-                    display_name: user?.displayName || '',
+                    username: user?.email?.split('@')[0] || `user_${Date.now()}`,
+                    display_name: user?.displayName || user?.email?.split('@')[0] || '',
                     bio: '',
                     avatar_url: user?.photoURL || ''
                 };

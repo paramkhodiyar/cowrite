@@ -49,7 +49,7 @@ const FeedPage = () => {
                     *,
                     profiles:author_id (username, display_name, avatar_url),
                     communities (name),
-                    post_likes (user_id)
+                    post_likes!inner (user_id)
                 `)
                 .order('created_at', { ascending: false });
 
