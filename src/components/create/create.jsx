@@ -204,3 +204,4 @@ function CreatePost() {
         </VantaBackground>
     );
 }
+export default CreatePost()
