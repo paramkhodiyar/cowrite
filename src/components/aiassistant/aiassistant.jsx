@@ -31,7 +31,7 @@ function AIAssistant({ onResponse, onClose }) {
 
         try {
             const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
             
             // Enhanced prompt for blog writing assistance
             const enhancedPrompt = `As a writing assistant for a blog post, help with: ${trimmedPrompt}. 
