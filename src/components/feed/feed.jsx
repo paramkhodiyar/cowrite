@@ -230,7 +230,16 @@ const ExplorePage = () => {
                                     className={selectedCommunity === community.id ? 'active' : ''}
                                     onClick={() => setSelectedCommunity(community.id)}
                                 >
-                                    {community.name} ({community.member_count})
+                                    {community.name === 'CoWrite' ? '🏠' : 
+                                     community.name === 'Technology' ? '💻' :
+                                     community.name === 'Creative Writing' ? '✍️' :
+                                     community.name === 'Science & Nature' ? '🔬' :
+                                     community.name === 'Lifestyle & Wellness' ? '🌱' :
+                                     community.name === 'Gaming' ? '🎮' :
+                                     community.name === 'Movies & TV' ? '🎬' :
+                                     community.name === 'Books & Literature' ? '📚' :
+                                     community.name === 'Art & Design' ? '🎨' :
+                                     community.name === 'Food & Cooking' ? '👨‍🍳' : '📝'} {community.name} ({community.member_count})
                                 </button>
                                 {isJoined(community.id) ? (
                                     community.name === 'CoWrite' ? (
