@@ -1,138 +1,112 @@
-import React, { useState } from 'react';
-import { supabase } from '../../supabase';
-import { FaHeart, FaRegHeart, FaComment, FaEdit, FaTrash } from 'react-icons/fa';
-import { formatDistanceToNow } from 'date-fns';
-import EditPostModal from '../editpost/editpost';
-import CommentsSection from '../comments/comments';
-import './postcard.css';
+import React, { useState } from "react";
+import VantaBackground from "../vantabackground/vantabackground";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { IoSendSharp } from "react-icons/io5";
+import Navbar from "../navbar/navbar";
+import "./coai.css";
 
-const PostCard = ({ post, user, onLike, onUpdate }) => {
-    const [showComments, setShowComments] = useState(false);
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
+function CoAI() {
+    const [prompt, setPrompt] = useState("");
+    const [chatHistory, setChatHistory] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const apiKey = import.meta.env.VITE_GOOGLE_GEN_AI_API_KEY;
 
-    const isLiked = user && post.post_likes?.some(like => like.user_id === user.uid);
-    const isAuthor = user?.uid === post.author_id;
-    const canEdit = isAuthor && post.edit_count < 2;
+    const handleInputChange = (event) => {
+        setPrompt(event.target.value);
+    };
 
-    const handleDelete = async () => {
-        if (!window.confirm('Are you sure you want to delete this post?')) return;
-        
-        setIsDeleting(true);
+    const handleKeyDown = (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            generateContent();
+        }
+    };
+
+    const generateContent = async () => {
+        const trimmedPrompt = prompt.trim();
+        if (!trimmedPrompt) return;
+
+        // Check if API key exists
+        if (!apiKey) {
+            setChatHistory((prev) => [
+                ...prev,
+                { role: "ai", content: "API key is missing. Please check your environment variables." },
+            ]);
+            return;
+        }
+        const newChat = { role: "user", content: trimmedPrompt };
+        setChatHistory((prev) => [...prev, newChat]);
+        setPrompt("");
+        setLoading(true);
+
         try {
-            const { error } = await supabase
-                .from('posts')
-                .delete()
-                .eq('id', post.id);
+            const genAI = new GoogleGenerativeAI(apiKey);
+            const model = genAI.getGenerativeModel({ model: "gemini-pro" });
             
-            if (error) throw error;
-            onUpdate();
+            const result = await model.generateContent(trimmedPrompt);
+            const text = result.response.text();
+
+            setChatHistory((prev) => [...prev, { role: "ai", content: text }]);
         } catch (error) {
-            console.error('Error deleting post:', error);
-            alert('Failed to delete post');
+            console.error("Error generating content:", error);
+            let errorMessage = "Sorry, I'm having trouble connecting right now.";
+            if (error.message?.includes('API_KEY')) {
+                errorMessage = "Invalid API key. Please check your Google AI API key.";
+            } else if (error.message?.includes('quota')) {
+                errorMessage = "API quota exceeded. Please try again later.";
+            }
+            setChatHistory((prev) => [
+                ...prev,
+                { role: "ai", content: errorMessage },
+            ]);
         } finally {
-            setIsDeleting(false);
+            setLoading(false);
         }
     };
 
     return (
-        <div className="post-card">
-            <div className="post-header">
-                <div className="post-author">
-                    <div className="author-avatar">
-                        {post.profiles?.avatar_url ? (
-                            <img src={post.profiles.avatar_url} alt="Avatar" />
-                        ) : (
-                            <div className="default-avatar">
-                                {post.profiles?.display_name?.[0] || post.profiles?.username?.[0] || 'U'}
-                            </div>
-                        )}
-                    </div>
-                    <div className="author-info">
-                        <span className="author-name">
-                            {post.profiles?.display_name || post.profiles?.username}
-                        </span>
-                        <span className="post-community">in {post.communities?.name}</span>
-                        <span className="post-time">
-                            {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
-                            {post.edit_count > 0 && <span className="edited"> (edited {post.edit_count} time{post.edit_count > 1 ? 's' : ''})</span>}
-                        </span>
-                    </div>
-                </div>
-                {isAuthor && (
-                    <div className="post-actions">
-                        {canEdit && (
-                            <button 
-                                className="edit-btn"
-                                onClick={() => setShowEditModal(true)}
-                                title="Edit post"
-                            >
-                                <FaEdit />
-                            </button>
-                        )}
-                        <button 
-                            className="delete-btn"
-                            onClick={handleDelete}
-                            disabled={isDeleting}
-                            title="Delete post"
+        <VantaBackground>
+            <Navbar />
+            <div className="coai-wrapper">
+                <div className="chat-window">
+                    {chatHistory.map((msg, idx) => (
+                        <div
+                            key={idx}
+                            className={`chat-bubble ${msg.role === "user" ? "user-bubble" : "ai-bubble"}`}
                         >
-                            <FaTrash />
-                        </button>
-                    </div>
-                )}
-            </div>
-
-            <div className="post-content">
-                <h3 className="post-title">{post.title}</h3>
-                <div className="post-text">
-                    {post.content.split('\n').map((line, index) => (
-                        <p key={index}>{line}</p>
+                            {msg.content}
+                        </div>
                     ))}
+                    {loading && (
+                        <div className="chat-bubble ai-bubble">
+                            <div className="typing">
+                                <div className="dot"></div>
+                                <div className="dot"></div>
+                                <div className="dot"></div>
+                            </div>
+                        </div>
+                    )}
                 </div>
-                {post.media_url && (
-                    <div className="post-media">
-                        <img src={post.media_url} alt="Post media" />
-                    </div>
-                )}
-            </div>
-
-            <div className="post-footer">
-                <div className="post-stats">
-                    <button 
-                        className={`like-btn ${isLiked ? 'liked' : ''}`}
-                        onClick={() => onLike(post.id)}
-                        disabled={!user}
+                <div className="chat-input-container">
+                    <textarea
+                        className="chat-input"
+                        rows="1"
+                        placeholder="CoAI✨ to take your content to next level...."
+                        value={prompt}
+                        onChange={handleInputChange}
+                        onKeyDown={handleKeyDown}
+                    />
+                    <button
+                        className="send-button"
+                        onClick={generateContent}
+                        disabled={loading}
                     >
-                        {isLiked ? <FaHeart /> : <FaRegHeart />}
-                        <span>{post.likes_count}</span>
-                    </button>
-                    <button 
-                        className="comment-btn"
-                        onClick={() => setShowComments(!showComments)}
-                    >
-                        <FaComment />
-                        <span>{post.comments_count}</span>
+                       <IoSendSharp style={{ display: "flex", justifyContent: "center", alignItems: "center" }}/>
                     </button>
                 </div>
             </div>
-
-            {showComments && (
-                <CommentsSection 
-                    postId={post.id} 
-                    user={user}
-                    onUpdate={onUpdate}
-                />
-            )}
-
-            {showEditModal && (
-                <EditPostModal
-                    post={post}
-                    onClose={() => setShowEditModal(false)}
-                    onUpdate={onUpdate}
-                />
-            )}
-        </div>
+        </VantaBackground>
     );
-};
+}
 
-export default PostCard;
+export default CoAI;

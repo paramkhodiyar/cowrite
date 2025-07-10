@@ -1,11 +1,9 @@
 import React, { useState } from "react";
-import VantaBackground from "../vantabackground/vantabackground";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { IoSendSharp } from "react-icons/io5";
-import Navbar from "../navbar/navbar";
+import { IoSendSharp, IoClose } from "react-icons/io5";
 import "./aiassistant.css";
 
-function CoAI() {
+function AIAssistant({ onResponse, onClose }) {
     const [prompt, setPrompt] = useState("");
     const [chatHistory, setChatHistory] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -45,9 +43,15 @@ function CoAI() {
             setChatHistory((prev) => [...prev, { role: "ai", content: text }]);
         } catch (error) {
             console.error("Error generating content:", error);
+            let errorMessage = "Sorry, I'm having trouble connecting right now.";
+            if (error.message && error.message.includes('API_KEY')) {
+                errorMessage = "Invalid API key. Please check your Google AI API key in environment variables.";
+            } else if (error.message && error.message.includes('quota')) {
+                errorMessage = "API quota exceeded. Please try again later.";
+            }
             setChatHistory((prev) => [
                 ...prev,
-                { role: "ai", content: "Sorry, I'm having trouble connecting right now. Please check your API key and try again." },
+                { role: "ai", content: errorMessage },
             ]);
         } finally {
             setLoading(false);
@@ -59,99 +63,78 @@ function CoAI() {
     };
 
     return (
-        <VantaBackground>
-            <div className="coai-container">
-                <div className="ai-assistant">
-                    <div className="ai-header">
-                        <h3>✨ AI Writing Assistant</h3>
-                        <button className="ai-close" onClick={onClose}>
-                            <IoClose />
-                        </button>
-                    </div>
-            
-                    <div className="ai-chat-window">
-                        {chatHistory.length === 0 && (
-                            <div className="ai-welcome">
-                                <p>Hi! I'm here to help you write better content. Ask me to:</p>
-                                <ul>
-                                    <li>Improve your writing</li>
-                                    <li>Generate ideas</li>
-                                    <li>Fix grammar</li>
-                                    <li>Expand on topics</li>
-                                    <li>Create engaging titles</li>
-                                </ul>
-                            </div>
-                        )}
-                
-                        {chatHistory.map((msg, idx) => (
-                            <div
-                                key={idx}
-                                className={`ai-chat-bubble ${msg.role === "user" ? "ai-user-bubble" : "ai-ai-bubble"}`}
-                            >
-                                <div className="ai-message-content">
-                                    {msg.content}
-                                </div>
-                                {msg.role === "ai" && (
-                                    <button 
-                                        className="ai-insert-btn"
-                                        onClick={() => insertResponse(msg.content)}
-                                        title="Insert this response into your post"
-                                    >
-                                        Insert
-                                    </button>
-                                )}
-                            </div>
-                        ))}
-                
-                        {loading && (
-                            <div className="ai-chat-bubble ai-ai-bubble">
-                                <div className="ai-typing">
-                                    <div className="ai-dot"></div>
-                                    <div className="ai-dot"></div>
-                                    <div className="ai-dot"></div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-            
-                    <div className="ai-input-container">
-                        <textarea
-                            className="ai-input"
-                            rows="2"
-                            placeholder="Ask me anything about your blog post..."
-                            value={prompt}
-                            onChange={handleInputChange}
-                            onKeyDown={handleKeyDown}
-                        />
-                        <button
-                            className="ai-send-button"
-                            onClick={generateContent}
-                            disabled={loading || !prompt.trim()}
-                        >
-                            <IoSendSharp />
-                        </button>
-                    </div>
-                </div>
-                <div className="chat-input-container">
-                    <textarea
-                        className="chat-input"
-                        rows="1"
-                        placeholder="CoAI✨ to take your content to next level...."
-                        value={prompt}
-                        onChange={handleInputChange}
-                        onKeyDown={handleKeyDown}
-                    />
-                    <button
-                        className="send-button"
-                        onClick={generateContent}
-                        disabled={loading}
-                    >
-                       <IoSendSharp style={{ display: "flex", justifyContent: "center", alignItems: "center" }}/>
-                    </button>
-                </div>
+        <div className="ai-assistant">
+            <div className="ai-header">
+                <h3>✨ AI Writing Assistant</h3>
+                <button className="ai-close" onClick={onClose}>
+                    <IoClose />
+                </button>
             </div>
-        </VantaBackground>
+            
+            <div className="ai-chat-window">
+                {chatHistory.length === 0 && (
+                    <div className="ai-welcome">
+                        <p>Hi! I'm here to help you write better content. Ask me to:</p>
+                        <ul>
+                            <li>Improve your writing</li>
+                            <li>Generate ideas</li>
+                            <li>Fix grammar</li>
+                            <li>Expand on topics</li>
+                            <li>Create engaging titles</li>
+                        </ul>
+                    </div>
+                )}
+                
+                {chatHistory.map((msg, idx) => (
+                    <div
+                        key={idx}
+                        className={`ai-chat-bubble ${msg.role === "user" ? "ai-user-bubble" : "ai-ai-bubble"}`}
+                    >
+                        <div className="ai-message-content">
+                            {msg.content}
+                        </div>
+                        {msg.role === "ai" && (
+                            <button 
+                                className="ai-insert-btn"
+                                onClick={() => insertResponse(msg.content)}
+                                title="Insert this response into your post"
+                            >
+                                Insert
+                            </button>
+                        )}
+                    </div>
+                ))}
+                
+                {loading && (
+                    <div className="ai-chat-bubble ai-ai-bubble">
+                        <div className="ai-typing">
+                            <div className="ai-dot"></div>
+                            <div className="ai-dot"></div>
+                            <div className="ai-dot"></div>
+                        </div>
+                    </div>
+                )}
+            </div>
+            
+            <div className="ai-input-container">
+                <textarea
+                    className="ai-input"
+                    rows="2"
+                    placeholder="Ask me anything about your blog post..."
+                    value={prompt}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                />
+                <button
+                    className="ai-send-button"
+                    onClick={generateContent}
+                    disabled={loading || !prompt.trim()}
+                >
+                    <IoSendSharp />
+                </button>
+            </div>
+        </div>
     );
 }
 
-export default CoAI;
+export default AIAssistant;
