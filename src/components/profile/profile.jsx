@@ -3,7 +3,7 @@ import VantaBackground from "../vantabackground/vantabackground";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { IoSendSharp } from "react-icons/io5";
 import Navbar from "../navbar/navbar";
-import "./coai.css";
+import "./profile.css";
 
 function CoAI() {
     const [prompt, setPrompt] = useState("");
