@@ -19,12 +19,14 @@ function CreatePost() {
     const [loading, setLoading] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [showAI, setShowAI] = useState(false);
+    const [allCommunities, setAllCommunities] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
+                fetchAllCommunities();
                 fetchJoinedCommunities(currentUser.uid);
             } else {
                 navigate("/components/login/login");
@@ -32,6 +34,20 @@ function CreatePost() {
         });
         return () => unsubscribe();
     }, [navigate]);
+
+    const fetchAllCommunities = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('communities')
+                .select('*')
+                .order('name');
+            
+            if (error) throw error;
+            setAllCommunities(data || []);
+        } catch (error) {
+            console.error('Error fetching all communities:', error);
+        }
+    };
 
     const fetchJoinedCommunities = async (userId) => {
         try {
@@ -53,10 +69,15 @@ function CreatePost() {
             
             const communities = data ? data.map(cm => cm.communities) : [];
             setJoinedCommunities(communities);
+            
+            // If user has no joined communities, show all communities
+            if (communities.length === 0) {
+                setJoinedCommunities(allCommunities);
+            }
         } catch (error) {
             console.error('Error fetching joined communities:', error);
-            // If there's an error, still try to show available communities
-            setJoinedCommunities([]);
+            // If there's an error, show all communities as fallback
+            setJoinedCommunities(allCommunities);
         }
     };
 
@@ -179,7 +200,7 @@ function CreatePost() {
                                 required
                             >
                                 <option value="">Select a community</option>
-                                {joinedCommunities.map(community => (
+                                {(joinedCommunities.length > 0 ? joinedCommunities : allCommunities).map(community => (
                                     <option key={community.id} value={community.id}>
                                         {community.name}
                                     </option>

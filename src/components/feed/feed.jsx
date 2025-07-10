@@ -110,8 +110,8 @@ const ExplorePage = () => {
         if (!user) return;
         setJoiningCommunity(communityId);
         try {
-            // Ensure user profile exists first
-            const { error } = await supabase
+            // First, ensure user profile exists
+            const { error: profileError } = await supabase
                 .from('profiles')
                 .upsert({
                     id: user.uid,
@@ -123,12 +123,20 @@ const ExplorePage = () => {
                     ignoreDuplicates: false 
                 });
 
-            if (error) console.warn('Profile upsert warning:', error);
+            if (profileError && profileError.code !== '23505') {
+                console.warn('Profile upsert warning:', profileError);
+            }
 
             // Now join the community
             const { error: joinError } = await supabase
                 .from('community_members')
-                .insert({ community_id: communityId, user_id: user.uid });
+                .upsert({ 
+                    community_id: communityId, 
+                    user_id: user.uid 
+                }, {
+                    onConflict: 'community_id,user_id',
+                    ignoreDuplicates: true
+                });
             
             if (joinError) throw joinError;
             
@@ -136,12 +144,8 @@ const ExplorePage = () => {
             fetchCommunities(); // Refresh to update member counts
         } catch (error) {
             console.error('Error joining community:', error);
-            if (error.code === '23505') {
-                // Duplicate key error - user already joined
-                fetchJoinedCommunities();
-            } else {
-                alert('Failed to join community. Please try again.');
-            }
+            // Always refresh joined communities, even on error
+            fetchJoinedCommunities();
         } finally {
             setJoiningCommunity(null);
         }
