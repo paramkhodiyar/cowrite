@@ -164,3 +164,34 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+@media (max-width: 900px) {
+    .post-card {
+        padding: 12px;
+        border-radius: 10px;
+    }
+    .post-title {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .post-card {
+        padding: 8px;
+        border-radius: 0;
+        margin-bottom: 10px;
+    }
+    .post-title {
+        font-size: 1rem;
+    }
+    .post-content, .post-text {
+        font-size: 0.98rem;
+    }
+    .post-header {
+        flex-direction: column;
+        gap: 6px;
+    }
+    .author-info {
+        gap: 0;
+    }
+}

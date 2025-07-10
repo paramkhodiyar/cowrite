@@ -139,3 +139,31 @@
 .comment-content p {
     margin-bottom: 5px;
 }
+
+@media (max-width: 900px) {
+    .comments-section {
+        padding-top: 10px;
+    }
+    .comment-item {
+        padding: 10px;
+        border-radius: 6px;
+    }
+}
+
+@media (max-width: 600px) {
+    .comments-section {
+        padding-top: 4px;
+    }
+    .comment-item {
+        padding: 6px;
+        border-radius: 0;
+    }
+    .comment-input {
+        min-height: 50px;
+        font-size: 0.95rem;
+    }
+    .comment-submit {
+        font-size: 0.95rem;
+        padding: 6px 10px;
+    }
+}

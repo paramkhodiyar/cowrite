@@ -122,3 +122,77 @@
         width: 40px;
     }
 }
+
+.community-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.join-btn {
+    background: #488f8c;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.join-btn:hover {
+    background: #367572;
+}
+
+.joined-label {
+    color: #4caf50;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-left: 4px;
+}
+
+@media (max-width: 900px) {
+    .feed-container {
+        flex-direction: column;
+        width: 98%;
+        height: auto;
+        gap: 0;
+    }
+    .feed-sidebar {
+        width: 100%;
+        max-width: 100vw;
+        margin-bottom: 16px;
+        padding: 12px;
+        border-radius: 12px;
+    }
+    .feed-main {
+        width: 100%;
+        height: auto;
+        min-height: 60vh;
+        padding: 10px;
+        border-radius: 12px;
+    }
+}
+
+@media (max-width: 600px) {
+    .feed-container {
+        width: 100vw;
+        padding: 0;
+    }
+    .feed-sidebar, .feed-main {
+        border-radius: 0;
+        padding: 8px;
+    }
+    .feed-title {
+        font-size: 1.3rem;
+    }
+    .posts-container {
+        gap: 10px;
+    }
+}

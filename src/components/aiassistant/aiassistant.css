@@ -202,3 +202,30 @@
         opacity: 1;
     }
 }
+
+@media (max-width: 900px) {
+    .aiassistant-modal {
+        padding: 10px;
+        border-radius: 10px;
+    }
+    .aiassistant-title {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .aiassistant-modal {
+        padding: 6px;
+        border-radius: 0;
+    }
+    .aiassistant-title {
+        font-size: 1rem;
+    }
+    .aiassistant-input {
+        font-size: 0.98rem;
+    }
+    .aiassistant-send-btn {
+        font-size: 0.95rem;
+        padding: 6px 10px;
+    }
+}

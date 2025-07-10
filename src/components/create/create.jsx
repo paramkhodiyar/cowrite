@@ -14,7 +14,7 @@ function CreatePost() {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [mediaUrl, setMediaUrl] = useState("");
-    const [communities, setCommunities] = useState([]);
+    const [joinedCommunities, setJoinedCommunities] = useState([]);
     const [selectedCommunity, setSelectedCommunity] = useState("");
     const [loading, setLoading] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -25,7 +25,7 @@ function CreatePost() {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
-                fetchCommunities();
+                fetchJoinedCommunities(currentUser.uid);
             } else {
                 navigate("/components/login/login");
             }
@@ -33,17 +33,16 @@ function CreatePost() {
         return () => unsubscribe();
     }, [navigate]);
 
-    const fetchCommunities = async () => {
+    const fetchJoinedCommunities = async (userId) => {
         try {
             const { data, error } = await supabase
-                .from('communities')
-                .select('*')
-                .order('name');
-            
+                .from('community_members')
+                .select('community_id, communities!inner(id, name)')
+                .eq('user_id', userId);
             if (error) throw error;
-            setCommunities(data || []);
+            setJoinedCommunities(data ? data.map(cm => cm.communities) : []);
         } catch (error) {
-            console.error('Error fetching communities:', error);
+            console.error('Error fetching joined communities:', error);
         }
     };
 
@@ -125,7 +124,7 @@ function CreatePost() {
                                 required
                             >
                                 <option value="">Select a community</option>
-                                {communities.map(community => (
+                                {joinedCommunities.map(community => (
                                     <option key={community.id} value={community.id}>
                                         {community.name}
                                     </option>

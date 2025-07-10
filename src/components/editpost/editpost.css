@@ -135,3 +135,30 @@
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+@media (max-width: 900px) {
+    .editpost-modal {
+        padding: 10px;
+        border-radius: 10px;
+    }
+    .editpost-title {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .editpost-modal {
+        padding: 6px;
+        border-radius: 0;
+    }
+    .editpost-title {
+        font-size: 1rem;
+    }
+    .editpost-form input, .editpost-form textarea {
+        font-size: 0.98rem;
+    }
+    .editpost-btn {
+        font-size: 0.95rem;
+        padding: 6px 10px;
+    }
+}

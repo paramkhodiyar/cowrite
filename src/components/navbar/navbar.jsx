@@ -45,7 +45,7 @@ function Navbar() {
             <div className="nav-links">
                 <Link to="/" className="nav-link">Home</Link>
                 <span className="separator">|</span>
-                <Link to="/feed" className="nav-link">Feed</Link>
+                <Link to="/explore" className="nav-link">Explore</Link>
                 <span className="separator">|</span>
                 <Link to="/create" className="nav-link">Create</Link>
                 <span className="separator">|</span>

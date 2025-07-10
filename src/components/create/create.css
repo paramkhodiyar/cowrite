@@ -188,3 +188,39 @@
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+@media (max-width: 900px) {
+    .create-container {
+        width: 98vw;
+        min-width: unset;
+        padding: 0;
+    }
+    .create-main {
+        padding: 12px;
+        border-radius: 12px;
+    }
+    .create-form {
+        padding: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .create-container {
+        width: 100vw;
+        padding: 0;
+    }
+    .create-main {
+        padding: 6px;
+        border-radius: 0;
+    }
+    .create-title {
+        font-size: 1.2rem;
+    }
+    .form-group label {
+        font-size: 0.95rem;
+    }
+    .create-btn {
+        width: 100%;
+        font-size: 1rem;
+    }
+}

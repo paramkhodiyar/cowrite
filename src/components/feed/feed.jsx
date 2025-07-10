@@ -7,11 +7,12 @@ import VantaBackground from '../vantabackground/vantabackground';
 import PostCard from '../postcard/postcard';
 import './feed.css';
 
-const FeedPage = () => {
+const ExplorePage = () => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null);
     const [communities, setCommunities] = useState([]);
+    const [joinedCommunities, setJoinedCommunities] = useState([]);
     const [selectedCommunity, setSelectedCommunity] = useState('all');
 
     useEffect(() => {
@@ -22,9 +23,15 @@ const FeedPage = () => {
     }, []);
 
     useEffect(() => {
-        fetchCommunities();
+        if (user) {
+            fetchCommunities();
+            fetchJoinedCommunities();
+        }
+    }, [user]);
+
+    useEffect(() => {
         fetchPosts();
-    }, [selectedCommunity]);
+    }, [selectedCommunity, user]);
 
     const fetchCommunities = async () => {
         try {
@@ -32,11 +39,57 @@ const FeedPage = () => {
                 .from('communities')
                 .select('*')
                 .order('member_count', { ascending: false });
-            
             if (error) throw error;
             setCommunities(data || []);
         } catch (error) {
             console.error('Error fetching communities:', error);
+        }
+    };
+
+    const fetchJoinedCommunities = async () => {
+        if (!user) return;
+        try {
+            const { data, error } = await supabase
+                .from('community_members')
+                .select('community_id')
+                .eq('user_id', user.uid);
+            if (error) throw error;
+            setJoinedCommunities(data ? data.map(cm => cm.community_id) : []);
+        } catch (error) {
+            console.error('Error fetching joined communities:', error);
+        }
+    };
+
+    const handleJoinCommunity = async (communityId) => {
+        if (!user) return;
+        try {
+            await supabase
+                .from('community_members')
+                .insert({ community_id: communityId, user_id: user.uid });
+            fetchJoinedCommunities();
+        } catch (error) {
+            alert('Failed to join community');
+        }
+    };
+
+    const handleLeaveCommunity = async (communityId) => {
+        if (!user) return;
+        // Prevent leaving CoWrite
+        const coWrite = communities.find(c => c.name === 'CoWrite');
+        if (coWrite && communityId === coWrite.id) {
+            alert('You cannot leave the CoWrite community.');
+            return;
+        }
+        try {
+            await supabase
+                .from('community_members')
+                .delete()
+                .eq('community_id', communityId)
+                .eq('user_id', user.uid);
+            fetchJoinedCommunities();
+            if (selectedCommunity === communityId) setSelectedCommunity('all');
+        } catch (error) {
+            alert('Failed to leave community');
         }
     };
 
@@ -52,13 +105,10 @@ const FeedPage = () => {
                     post_likes (user_id)
                 `)
                 .order('created_at', { ascending: false });
-
             if (selectedCommunity !== 'all') {
                 query = query.eq('community_id', selectedCommunity);
             }
-
             const { data, error } = await query;
-            
             if (error) throw error;
             setPosts(data || []);
         } catch (error) {
@@ -68,62 +118,42 @@ const FeedPage = () => {
         }
     };
 
-    const handleLike = async (postId) => {
-        if (!user) return;
-
-        try {
-            const { data: existingLike } = await supabase
-                .from('post_likes')
-                .select('id')
-                .eq('post_id', postId)
-                .eq('user_id', user.uid)
-                .single();
-
-            if (existingLike) {
-                await supabase
-                    .from('post_likes')
-                    .delete()
-                    .eq('post_id', postId)
-                    .eq('user_id', user.uid);
-            } else {
-                await supabase
-                    .from('post_likes')
-                    .insert({ post_id: postId, user_id: user.uid });
-            }
-
-            fetchPosts();
-        } catch (error) {
-            console.error('Error handling like:', error);
-        }
-    };
+    const isJoined = (communityId) => joinedCommunities.includes(communityId);
 
     return (
         <VantaBackground>
             <Navbar />
             <div className="feed-container">
                 <div className="feed-sidebar">
-                    <h3>Communities</h3>
+                    <h3>Explore Communities</h3>
                     <div className="community-filter">
                         <button 
                             className={selectedCommunity === 'all' ? 'active' : ''}
                             onClick={() => setSelectedCommunity('all')}
                         >
-                            All Posts
+                            Mixed Feed
                         </button>
                         {communities.map(community => (
-                            <button
-                                key={community.id}
-                                className={selectedCommunity === community.id ? 'active' : ''}
-                                onClick={() => setSelectedCommunity(community.id)}
-                            >
-                                {community.name} ({community.member_count})
-                            </button>
+                            <div key={community.id} className="community-row">
+                                <button
+                                    className={selectedCommunity === community.id ? 'active' : ''}
+                                    onClick={() => setSelectedCommunity(community.id)}
+                                >
+                                    {community.name} ({community.member_count})
+                                </button>
+                                {isJoined(community.id) ? (
+                                    <span className="joined-label">Joined</span>
+                                ) : (
+                                    <button className="join-btn" onClick={() => handleJoinCommunity(community.id)} title="Join">
+                                        +
+                                    </button>
+                                )}
+                            </div>
                         ))}
                     </div>
                 </div>
-
                 <div className="feed-main">
-                    <h1 className="feed-title">Feed</h1>
+                    <h1 className="feed-title">Explore</h1>
                     {loading ? (
                         <div className="loader-container">
                             <div className="loader"></div>
@@ -151,4 +181,4 @@ const FeedPage = () => {
     );
 };
 
-export default FeedPage;
+export default ExplorePage;

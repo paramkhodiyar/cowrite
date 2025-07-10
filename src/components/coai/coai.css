@@ -130,3 +130,28 @@
         background-color: #b5d9cb;
     }
 }
+
+@media (max-width: 900px) {
+    .coai-container {
+        padding: 10px;
+    }
+    .coai-title {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .coai-container {
+        padding: 4px;
+    }
+    .coai-title {
+        font-size: 1rem;
+    }
+    .chat-input {
+        font-size: 0.98rem;
+    }
+    .send-button {
+        font-size: 0.95rem;
+        padding: 6px 10px;
+    }
+}

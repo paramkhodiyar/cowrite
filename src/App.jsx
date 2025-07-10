@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./components/homepage/homepage";
-import FeedPage from "./components/feed/feed";
+import ExplorePage from "./components/feed/feed";
 import Signup from "./components/signup/signup";
 import CoAI from "./components/coai/coai";
 import Login from "./components/login/login";
@@ -14,7 +14,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/feed" element={<FeedPage />} />
+        <Route path="/explore" element={<ExplorePage />} />
         <Route path="/components/signup/signup" element={<Signup />} />
         <Route path="/components/coai/coai" element={<CoAI />} />
         <Route path="/components/login/login" element={<Login />} />
