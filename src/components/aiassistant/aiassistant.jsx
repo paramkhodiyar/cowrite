@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import VantaBackground from "../vantabackground/vantabackground";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { IoSendSharp, IoClose } from "react-icons/io5";
-import "./aiassistant.css";
+import { IoSendSharp } from "react-icons/io5";
+import Navbar from "../navbar/navbar";
+import "./coai.css";
 
-function AIAssistant({ onResponse, onClose }) {
+function CoAI() {
     const [prompt, setPrompt] = useState("");
     const [chatHistory, setChatHistory] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -28,7 +30,7 @@ function AIAssistant({ onResponse, onClose }) {
         if (!apiKey) {
             setChatHistory((prev) => [
                 ...prev,
-                { role: "ai", content: "API key is missing. Please add VITE_GOOGLE_GEN_AI_API_KEY to your environment variables." },
+                { role: "ai", content: "API key is missing. Please check your environment variables." },
             ]);
             return;
         }
@@ -41,11 +43,7 @@ function AIAssistant({ onResponse, onClose }) {
             const genAI = new GoogleGenerativeAI(apiKey);
             const model = genAI.getGenerativeModel({ model: "gemini-pro" });
             
-            // Enhanced prompt for blog writing assistance
-            const enhancedPrompt = `As a writing assistant for a blog post, help with: ${trimmedPrompt}. 
-            Please provide helpful, creative, and well-structured content that can be used in a blog post.`;
-            
-            const result = await model.generateContent(enhancedPrompt);
+            const result = await model.generateContent(trimmedPrompt);
             const text = result.response.text();
 
             setChatHistory((prev) => [...prev, { role: "ai", content: text }]);
@@ -53,7 +51,7 @@ function AIAssistant({ onResponse, onClose }) {
             console.error("Error generating content:", error);
             let errorMessage = "Sorry, I'm having trouble connecting right now.";
             if (error.message?.includes('API_KEY')) {
-                errorMessage = "Invalid API key. Please check your Google AI API key in environment variables.";
+                errorMessage = "Invalid API key. Please check your Google AI API key.";
             } else if (error.message?.includes('quota')) {
                 errorMessage = "API quota exceeded. Please try again later.";
             }
@@ -66,83 +64,49 @@ function AIAssistant({ onResponse, onClose }) {
         }
     };
 
-    const insertResponse = (response) => {
-        onResponse(response);
-    };
-
     return (
-        <div className="ai-assistant">
-            <div className="ai-header">
-                <h3>✨ AI Writing Assistant</h3>
-                <button className="ai-close" onClick={onClose}>
-                    <IoClose />
-                </button>
-            </div>
-            
-            <div className="ai-chat-window">
-                {chatHistory.length === 0 && (
-                    <div className="ai-welcome">
-                        <p>Hi! I'm here to help you write better content. Ask me to:</p>
-                        <ul>
-                            <li>Improve your writing</li>
-                            <li>Generate ideas</li>
-                            <li>Fix grammar</li>
-                            <li>Expand on topics</li>
-                            <li>Create engaging titles</li>
-                        </ul>
-                    </div>
-                )}
-                
-                {chatHistory.map((msg, idx) => (
-                    <div
-                        key={idx}
-                        className={`ai-chat-bubble ${msg.role === "user" ? "ai-user-bubble" : "ai-ai-bubble"}`}
-                    >
-                        <div className="ai-message-content">
+        <VantaBackground>
+            <Navbar />
+            <div className="coai-wrapper">
+                <div className="chat-window">
+                    {chatHistory.map((msg, idx) => (
+                        <div
+                            key={idx}
+                            className={`chat-bubble ${msg.role === "user" ? "user-bubble" : "ai-bubble"}`}
+                        >
                             {msg.content}
                         </div>
-                        {msg.role === "ai" && (
-                            <button 
-                                className="ai-insert-btn"
-                                onClick={() => insertResponse(msg.content)}
-                                title="Insert this response into your post"
-                            >
-                                Insert
-                            </button>
-                        )}
-                    </div>
-                ))}
-                
-                {loading && (
-                    <div className="ai-chat-bubble ai-ai-bubble">
-                        <div className="ai-typing">
-                            <div className="ai-dot"></div>
-                            <div className="ai-dot"></div>
-                            <div className="ai-dot"></div>
+                    ))}
+                    {loading && (
+                        <div className="chat-bubble ai-bubble">
+                            <div className="typing">
+                                <div className="dot"></div>
+                                <div className="dot"></div>
+                                <div className="dot"></div>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
+                <div className="chat-input-container">
+                    <textarea
+                        className="chat-input"
+                        rows="1"
+                        placeholder="CoAI✨ to take your content to next level...."
+                        value={prompt}
+                        onChange={handleInputChange}
+                        onKeyDown={handleKeyDown}
+                    />
+                    <button
+                        className="send-button"
+                        onClick={generateContent}
+                        disabled={loading}
+                    >
+                       <IoSendSharp style={{ display: "flex", justifyContent: "center", alignItems: "center" }}/>
+                    </button>
+                </div>
             </div>
-            
-            <div className="ai-input-container">
-                <textarea
-                    className="ai-input"
-                    rows="2"
-                    placeholder="Ask me anything about your blog post..."
-                    value={prompt}
-                    onChange={handleInputChange}
-                    onKeyDown={handleKeyDown}
-                />
-                <button
-                    className="ai-send-button"
-                    onClick={generateContent}
-                    disabled={loading || !prompt.trim()}
-                >
-                    <IoSendSharp />
-                </button>
-            </div>
-        </div>
+        </VantaBackground>
     );
 }
 
-export default AIAssistant;
+export default CoAI;
