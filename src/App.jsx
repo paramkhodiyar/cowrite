@@ -10,6 +10,7 @@ import Profile from "./components/profile/profile";
 import "./App.css";
 
 function App() {
+  console.log("App component rendering");
   return (
     <BrowserRouter>
       <Routes>

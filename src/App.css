@@ -1,7 +1,15 @@
-*,body{
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
   margin: 0;
   padding: 0;
-  /* background-color: antiquewhite; */
-  /* overflow-y: hidden; */
+  min-height: 100vh;
+  font-family: 'Montserrat', sans-serif;
+}
 
+#root {
+  min-height: 100vh;
+  background-color: #0a1a1d;
 }
