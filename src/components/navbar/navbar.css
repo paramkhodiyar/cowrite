@@ -1,4 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+* {
+    box-sizing: border-box;
+}
+
+.nav-bar, .nav-links, .logo, .account-details, .accountholder, .logout-button, .navbar-signup {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.nav-bar, .nav-links {
+    min-width: 0;
+}
+
 .nav-bar {
     position: absolute;
     display: flex;

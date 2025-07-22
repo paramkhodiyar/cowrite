@@ -1,3 +1,16 @@
+* {
+    box-sizing: border-box;
+}
+
+.modal-content, .modal-header, .edit-warning, .edit-form, .form-group, .form-group label, .form-group input, .form-group textarea {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.modal-content, .edit-form {
+    min-width: 0;
+}
+
 .modal-overlay {
     position: fixed;
     top: 0;

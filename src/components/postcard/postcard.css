@@ -1,3 +1,16 @@
+* {
+    box-sizing: border-box;
+}
+
+.post-card, .post-header, .post-title, .post-text, .post-content, .post-footer, .author-info, .author-name, .post-community, .post-time {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.post-card, .post-header, .post-content {
+    min-width: 0;
+}
+
 .post-card {
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 12px;

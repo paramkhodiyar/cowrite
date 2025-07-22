@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
-    padding-top: 60px; /* adjust based on navbar */
+    padding-top: 60px;
     color: white;
     backdrop-filter: blur(2px);
 }

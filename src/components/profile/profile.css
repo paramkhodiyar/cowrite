@@ -1,3 +1,16 @@
+* {
+    box-sizing: border-box;
+}
+
+.profile-container, .profile-header, .profile-info, .profile-info h1, .profile-bio, .profile-username, .user-posts h2, .no-posts, .post-preview, .post-preview-content {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.profile-container, .profile-header, .profile-info, .post-preview {
+    min-width: 0;
+}
+
 .profile-container {
     position: relative;
     top: 8%;
@@ -7,6 +20,9 @@
     border-radius: 16px;
     padding: 30px;
     min-height: 80vh;
+    margin-top: 80px; /* Add space for navbar */
+    overflow-y: auto; /* Allow scrolling if content overflows */
+    max-height: calc(100vh - 80px); /* Prevent from going out of viewport */
 }
 
 .profile-loading {
@@ -99,6 +115,8 @@
     border-radius: 12px;
     padding: 25px;
     margin-bottom: 40px;
+    overflow-y: auto;
+    max-height: 70vh;
 }
 
 .edit-profile-form .form-group {
@@ -206,6 +224,8 @@
     .profile-container {
         padding: 10px;
         top: 5%;
+        margin-top: 64px; /* Slightly less space for smaller screens */
+        max-height: calc(100vh - 64px);
     }
     .profile-header {
         flex-direction: column;
@@ -215,12 +235,17 @@
         width: 70px;
         height: 70px;
     }
+    .edit-profile-form {
+        max-height: 60vh;
+    }
 }
 
 @media (max-width: 600px) {
     .profile-container {
         padding: 4px;
         top: 3%;
+        margin-top: 48px; /* Even less space for mobile */
+        max-height: calc(100vh - 48px);
     }
     .profile-header {
         gap: 4px;
@@ -238,5 +263,8 @@
     .edit-profile-btn, .save-profile-btn {
         font-size: 0.95rem;
         padding: 6px 10px;
+    }
+    .edit-profile-form {
+        max-height: 50vh;
     }
 }

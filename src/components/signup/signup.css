@@ -1,3 +1,16 @@
+* {
+    box-sizing: border-box;
+}
+
+.signup-form, .formcontainer, .signup-title, .signup-input, .login-link {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.signup-form, .formcontainer {
+    min-width: 0;
+}
+
 .signup-form {
     display: flex;
     flex-direction: column;
