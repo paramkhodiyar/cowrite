@@ -53,7 +53,7 @@ function HomePage() {
                 <Navbar />
                 <div className="maincontent">
                     <h1 className="homepageh1">
-                        {user ? `Welcome ${getDisplayName(user)} to CoWrite` : 'Welcome to CoWrite'}
+                        {user ? `Welcome back, ${getDisplayName(user)}!` : 'Welcome to CoWrite'}
                     </h1>
                     <p className="homepagep">Where Ideas Come Together and Stories Begin.</p>
                     
@@ -172,10 +172,10 @@ function HomePage() {
                             <div className="footer-section">
                                 <h4>Communities</h4>
                                 <ul>
-                                    <li><a href="/explore">Technology</a></li>
-                                    <li><a href="/explore">Creative Writing</a></li>
-                                    <li><a href="/explore">Science & Nature</a></li>
-                                    <li><a href="/explore">Lifestyle</a></li>
+                                    <li><Link to="/explore">Technology</Link></li>
+                                    <li><Link to="/explore">Creative Writing</Link></li>
+                                    <li><Link to="/explore">Science & Nature</Link></li>
+                                    <li><Link to="/explore">Lifestyle</Link></li>
                                 </ul>
                             </div>
                             

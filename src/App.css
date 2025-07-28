@@ -47,14 +47,32 @@ img {
   padding: 0 20px;
 }
 
+/* Account for fixed navbar */
+body {
+  padding-top: 0;
+}
+
+/* Ensure content doesn't hide behind fixed navbar */
+.page-content {
+  padding-top: 80px;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0 15px;
+  }
+  
+  .page-content {
+    padding-top: 70px;
   }
 }
 
 @media (max-width: 480px) {
   .container {
     padding: 0 10px;
+  }
+  
+  .page-content {
+    padding-top: 60px;
   }
 }

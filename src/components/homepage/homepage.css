@@ -1,12 +1,12 @@
 .maincontent {
     position: relative;
-    top: 20%;
+    top: 0;
     left: 0;
     transform: none;
     color: white;
     z-index: 1;
     text-align: center;
-    padding: 40px 20px;
+    padding: 120px 20px 60px 20px; /* Added top padding for navbar space */
     border-radius: 10px;
     max-width: 1200px;
     width: 100%;
@@ -14,6 +14,10 @@
     box-sizing: border-box;
     overflow-wrap: break-word;
     word-break: break-word;
+    min-height: 60vh; /* Ensure minimum height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .homepageh1 {
@@ -23,6 +27,7 @@
     overflow-wrap: break-word;
     word-break: break-word;
     line-height: 1.2;
+    max-width: 100%;
 }
 
 .homepagep {
@@ -41,6 +46,9 @@
     max-width: 1200px;
     margin: 0 auto;
     color: white;
+    background: transparent;
+    position: relative;
+    z-index: 1;
 }
 
 .features-title {
@@ -64,6 +72,7 @@
     padding: 30px;
     text-align: center;
     transition: transform 0.3s ease, background-color 0.3s ease;
+    backdrop-filter: blur(10px);
 }
 
 .feature-card:hover {
@@ -75,6 +84,7 @@
     font-size: 3rem;
     margin-bottom: 20px;
     display: block;
+    color: #488f8c;
 }
 
 .feature-card h3 {
@@ -95,6 +105,7 @@
     background: rgba(72, 143, 140, 0.05);
     border-radius: 20px;
     margin: 40px 0;
+    backdrop-filter: blur(10px);
 }
 
 .cta-title {
@@ -148,10 +159,13 @@
 }
 
 .footer {
-    background-color: rgba(35, 49, 52, 0.9);
+    background-color: rgba(35, 49, 52, 0.95);
     color: white;
     padding: 60px 20px 30px;
     margin-top: 80px;
+    position: relative;
+    z-index: 2;
+    backdrop-filter: blur(10px);
 }
 
 .footer-content {
@@ -250,6 +264,14 @@
 
 /* Tablet styles */
 @media (max-width: 1024px) {
+    .maincontent {
+        padding: 100px 15px 50px 15px;
+    }
+    
+    .features-section {
+        padding: 60px 15px;
+    }
+    
     .features-grid {
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 30px;
@@ -267,12 +289,12 @@
 
 @media (max-width: 768px) {
     .maincontent {
-        padding: 30px 15px;
-        top: 15%;
+        padding: 100px 15px 40px 15px;
+        min-height: 50vh;
     }
     
     .features-section {
-        padding: 60px 15px;
+        padding: 50px 15px;
     }
     
     .features-grid {
@@ -317,8 +339,8 @@
 /* Mobile styles */
 @media (max-width: 600px) {
     .maincontent {
-        padding: 20px 10px;
-        top: 10%;
+        padding: 90px 10px 30px 10px;
+        min-height: 40vh;
     }
     
     .features-section {
