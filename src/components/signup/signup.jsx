@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { handleSignup, signInWithGoogle } from "../../firebaseauth";
 import VantaBackground from "../vantabackground/vantabackground";
 import "./signup.css";
@@ -17,9 +17,15 @@ const Signup = () => {
             alert("Passwords do not match!");
             return;
         }
-        const user = await handleSignup(email, password);
-        if (user) {
-            navigate("/");
+        try {
+            const userCredential = await handleSignup(email, password);
+            if (userCredential && userCredential.user) {
+                navigate("/");
+            } else {
+                alert("Signup failed. Please try again.");
+            }
+        } catch (error) {
+            alert(error.message || "Signup failed. Please try again.");
         }
     };
 

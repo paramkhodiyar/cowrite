@@ -6,7 +6,7 @@
     color: white;
     z-index: 1;
     text-align: center;
-    padding: 120px 20px 60px 20px; /* Added top padding for navbar space */
+    padding: 120px 20px 60px 20px; 
     border-radius: 10px;
     max-width: 1200px;
     width: 100%;
@@ -14,7 +14,7 @@
     box-sizing: border-box;
     overflow-wrap: break-word;
     word-break: break-word;
-    min-height: 60vh; /* Ensure minimum height */
+    min-height: 60vh; 
     display: flex;
     flex-direction: column;
     justify-content: center;
