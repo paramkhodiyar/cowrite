@@ -7,9 +7,54 @@ html, body {
   padding: 0;
   min-height: 100vh;
   font-family: 'Montserrat', sans-serif;
+  overflow-x: hidden;
 }
 
 #root {
   min-height: 100vh;
   background-color: #0a1a1d;
+  overflow-x: hidden;
+}
+
+/* Ensure all text is readable and responsive */
+* {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles for accessibility */
+*:focus {
+  outline: 2px solid #488f8c;
+  outline-offset: 2px;
+}
+
+/* Responsive images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive containers */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 10px;
+  }
 }

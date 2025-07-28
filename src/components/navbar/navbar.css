@@ -16,13 +16,16 @@
     position: absolute;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     color: white;
     top: 2%;
     left: 0;
-    width: 95%;
+    width: 100%;
     padding: 10px 20px;
     background: transparent;
     z-index: 1;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .nav-links {
@@ -33,34 +36,27 @@
     padding: 12px 24px;
     border-radius: 48px;
     background-color: rgba(255, 255, 255, 0.1);
+    flex-wrap: wrap;
 }
 
 .nav-links .separator {
     color: white;
     font-size: 16px;
     opacity: 0.7;
+    display: none;
 }
 
 .nav-bar a {
     text-decoration: none;
     color: #ffffff;
     font-size: clamp(14px, 2vw, 18px);
+    white-space: nowrap;
 }
 .nav-bar a:hover {
     text-decoration: none;
     position: relative;
 }
 
-/* .nav-bar a:hover::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: -2px;
-    width: 0;
-    height: 2px;
-    background-color: white;
-    transition: width 0.3s ease-in-out;
-} */
 .sparkle-icon {
     color: #7CB9E8;
     font-size: 1.2em;
@@ -97,19 +93,21 @@
     justify-content: center;
     align-items: center;
     gap: 5px;
-    font-size: 3rem;
+    font-size: clamp(1.5rem, 4vw, 3rem);
     font-family: 'Montserrat', sans-serif;
-
+    white-space: nowrap;
 }
 .account-details {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 5px;
+    flex-wrap: wrap;
 }
 .logged-in{
     display: flex;
     gap: 5px;
+    flex-wrap: wrap;
 }
 .accountholder {
     border: 1px solid white;
@@ -121,6 +119,7 @@
     border-radius: 24px;
     text-decoration: none;
     color: white;
+    white-space: nowrap;
 }
 .accountholder:hover{
     cursor: pointer;
@@ -136,13 +135,155 @@
     border-radius: 24px;
     background: none;
     color: white;
+    white-space: nowrap;
 }
 .navbar-signup{
     background-color: teal;
     border: none;
     border-radius: 8px;
     color: white;
-
     height: 2.5rem;
-    width: 6rem;
+    min-width: 6rem;
+    padding: 0 15px;
+    white-space: nowrap;
+}
+
+/* Mobile menu styles */
+.mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: 1px solid white;
+    color: white;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.mobile-menu-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Tablet styles */
+@media (max-width: 1024px) {
+    .nav-bar {
+        padding: 10px 15px;
+    }
+    
+    .nav-links {
+        gap: 8px;
+        padding: 10px 20px;
+    }
+    
+    .nav-links .separator {
+        display: inline;
+    }
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .nav-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(10, 26, 29, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 15px;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        z-index: 1000;
+    }
+    
+    .logo {
+        font-size: 1.5rem;
+    }
+    
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: rgba(10, 26, 29, 0.98);
+        border: none;
+        border-radius: 0;
+        padding: 20px;
+        flex-direction: column;
+        gap: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .nav-links.mobile-open {
+        display: flex;
+    }
+    
+    .nav-links .separator {
+        display: none;
+    }
+    
+    .nav-links a {
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        width: 100%;
+        text-align: center;
+    }
+    
+    .nav-links a:last-child {
+        border-bottom: none;
+    }
+    
+    .mobile-menu-toggle {
+        display: block;
+    }
+    
+    .account-details {
+        gap: 8px;
+    }
+    
+    .accountholder,
+    .logout-button {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .navbar-signup {
+        height: 2rem;
+        font-size: 0.9rem;
+        min-width: 5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-bar {
+        padding: 10px;
+    }
+    
+    .logo {
+        font-size: 1.2rem;
+        gap: 3px;
+    }
+    
+    .account-details {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .logged-in {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .accountholder,
+    .logout-button {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+    
+    .navbar-signup {
+        height: 1.8rem;
+        font-size: 0.8rem;
+        min-width: 4rem;
+        padding: 0 10px;
+    }
 }
