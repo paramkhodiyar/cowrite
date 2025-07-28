@@ -6,15 +6,13 @@ Welcome to **CoWrite**! This platform is designed to help you create, manage, an
 
 - **AI-Powered Content Assistance**: Get suggestions, grammar corrections, and content ideas to improve your writing.
 - **User-Friendly Interface**: Intuitive design for seamless blog creation and management.
-- **Customizable Themes**: Personalize your blog's appearance to match your style.
-- **SEO Optimization**: Built-in tools to help your content rank higher in search engines.
-- **Collaboration Tools**: Work with co-authors and editors in real-time.
+- **Collaboration Tools**: Like, Share and Comment to engage with your community
 
 ## Technologies Used
 
 - **Frontend**: ReactJS,CSS,HTML,JavaScript,VantaJS
 - **AI Integration**: Gemini API
-- **API**: WordPress REST API,Spite API
+- **API**: Supabase
 
 
 ## Contact
